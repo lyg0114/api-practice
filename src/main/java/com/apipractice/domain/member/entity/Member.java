@@ -4,6 +4,7 @@ import static jakarta.persistence.GenerationType.IDENTITY;
 import static lombok.AccessLevel.PROTECTED;
 
 import com.apipractice.domain.common.Address;
+import com.apipractice.domain.common.BaseTimeEntity;
 import jakarta.persistence.Column;
 import jakarta.persistence.Embedded;
 import jakarta.persistence.Entity;
@@ -26,7 +27,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor(access = PROTECTED)
 @Table(name = "Member")
 @Entity
-public class Member {
+public class Member extends BaseTimeEntity {
 
   @Id
   @GeneratedValue(strategy = IDENTITY)
