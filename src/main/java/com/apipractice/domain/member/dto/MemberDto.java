@@ -1,6 +1,6 @@
 package com.apipractice.domain.member.dto;
 
-import static com.apipractice.global.type.Address.createAddress;
+import static com.apipractice.domain.common.Address.createAddress;
 import static lombok.AccessLevel.PRIVATE;
 
 import com.apipractice.domain.member.entity.Member;

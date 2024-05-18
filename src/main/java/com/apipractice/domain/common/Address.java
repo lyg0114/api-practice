@@ -1,4 +1,4 @@
-package com.apipractice.global.type;
+package com.apipractice.domain.common;
 
 import static lombok.AccessLevel.PRIVATE;
 

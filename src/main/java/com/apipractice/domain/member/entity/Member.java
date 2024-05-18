@@ -3,7 +3,7 @@ package com.apipractice.domain.member.entity;
 import static jakarta.persistence.GenerationType.IDENTITY;
 import static lombok.AccessLevel.PROTECTED;
 
-import com.apipractice.global.type.Address;
+import com.apipractice.domain.common.Address;
 import jakarta.persistence.Column;
 import jakarta.persistence.Embedded;
 import jakarta.persistence.Entity;
