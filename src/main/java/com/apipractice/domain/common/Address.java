@@ -28,7 +28,7 @@ public class Address {
   @Column(name = "street")
   private String street;
 
-  @Column(name = "zipCode")
+  @Column(name = "zip_code")
   private String zipCode;
 
   public static Address createAddress(String city, String street, String zipcode) {

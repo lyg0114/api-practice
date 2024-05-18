@@ -4,6 +4,7 @@ import static jakarta.persistence.FetchType.LAZY;
 import static jakarta.persistence.GenerationType.IDENTITY;
 import static lombok.AccessLevel.PROTECTED;
 
+import com.apipractice.domain.common.BaseTimeEntity;
 import com.apipractice.domain.item.entity.Item;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -30,7 +31,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor(access = PROTECTED)
 @Table(name = "order_item")
 @Entity
-public class OrderItem {
+public class OrderItem extends BaseTimeEntity {
 
   @Id
   @GeneratedValue(strategy = IDENTITY)

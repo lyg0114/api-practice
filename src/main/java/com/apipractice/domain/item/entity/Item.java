@@ -3,6 +3,7 @@ package com.apipractice.domain.item.entity;
 import static jakarta.persistence.GenerationType.IDENTITY;
 import static lombok.AccessLevel.PROTECTED;
 
+import com.apipractice.domain.common.BaseTimeEntity;
 import jakarta.persistence.Column;
 import jakarta.persistence.DiscriminatorColumn;
 import jakarta.persistence.Entity;
@@ -31,7 +32,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor(access = PROTECTED)
 @Table(name = "item")
 @Entity
-public abstract class Item {
+public abstract class Item extends BaseTimeEntity {
 
   @Id
   @GeneratedValue(strategy = IDENTITY)
