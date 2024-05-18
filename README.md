@@ -10,6 +10,7 @@
      
 ### 기타
 * DTO inner class 처리
+* Command 와 Query는 분리하여 진행
  
 ### 테스트
 * 도메인 별 Controller, Service 유닛테스트 작성
