@@ -5,8 +5,8 @@
 * Throw 된 예외는 공통의 클래스에서 처리
  
 ### 유효성처리
-* Controller 에서 @Valid 를 사용해서 진행
-* Service 에서 계층에서 진행
+* Controller : @Valid 를 사용해서 진행
+* Service : 비즈니스로직 관련 유효성 처리 
      
 ### 기타
 * DTO inner class 처리
