@@ -2,6 +2,7 @@ package com.apipractice.domain.common;
 
 import static lombok.AccessLevel.PRIVATE;
 
+import jakarta.persistence.Column;
 import jakarta.persistence.Embeddable;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -21,10 +22,13 @@ import org.springframework.util.StringUtils;
 @Embeddable
 public class Address {
 
+  @Column(name = "city")
   private String city;
 
+  @Column(name = "street")
   private String street;
 
+  @Column(name = "zipCode")
   private String zipCode;
 
   public static Address createAddress(String city, String street, String zipcode) {
