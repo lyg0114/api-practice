@@ -13,8 +13,11 @@
 * Command 와 Query는 분리하여 진행
  
 ### 테스트
-* 도메인 별 Controller, Service 유닛테스트 작성
-* 도메인 별 Service 통합테스트 작성
+* 도메인 별 Controller, Service **유닛테스트** 작성
+* 도메인 별 Service **통합테스트** 작성
+* 테스트 케이스
+  1. 성공 시나리오
+  2. 실패 시나리오
 
 ### 커밋 컨벤션
 * feat: 새로운 기능의 추가
