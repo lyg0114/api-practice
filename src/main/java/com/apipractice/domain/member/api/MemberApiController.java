@@ -5,6 +5,7 @@ import com.apipractice.domain.member.dto.MemberDto;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -27,6 +28,15 @@ public class MemberApiController {
       @RequestBody @Valid MemberDto.SignUpRequest requestDto
   ) {
     memberService.signUp(requestDto);
+    return ResponseEntity.ok().build();
+  }
+
+  //TODO : 샘플 api로서 추후 제거
+  @PostMapping("/hello/{param}")
+  public ResponseEntity<Void> hello(@PathVariable String param) {
+    System.out.println("########################################");
+    System.out.println("param = " + param);
+    System.out.println("########################################");
     return ResponseEntity.ok().build();
   }
 }

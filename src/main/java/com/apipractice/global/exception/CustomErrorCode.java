@@ -28,7 +28,13 @@ public enum CustomErrorCode {
   INVALID_HTTP_METHOD(METHOD_NOT_ALLOWED, "잘못된 Http Method 요청입니다."),
   INVALID_VALUE(BAD_REQUEST, "잘못된 입력값입니다."),
   UNKNON_INVALID_VALUE(BAD_REQUEST, "입력값을 확인해 주세요."),
-  SERVER_INTERNAL_ERROR(INTERNAL_SERVER_ERROR, "서버 오류가 발생했습니다.");
+  SERVER_INTERNAL_ERROR(INTERNAL_SERVER_ERROR, "서버 오류가 발생했습니다."),
+
+  // JWT
+  TOKEN_NOT_EXIST(BAD_REQUEST, "JWT Token이 존재하지 않습니다."),
+  INVALID_TOKEN(BAD_REQUEST, "유효하지 않은 JWT Token 입니다."),
+  REFRESH_TOKEN_EXPIRED(BAD_REQUEST, "만료된 Refresh Token 입니다."),
+  ACCESS_TOKEN_EXPIRED(BAD_REQUEST, "만료된 Access Token 입니다.");
 
   private final HttpStatus httpStatus;
   private final String errorMessage;

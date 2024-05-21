@@ -52,6 +52,17 @@ public class Member extends BaseTimeEntity {
   @OneToMany(mappedBy = "member")
   private List<Order> orders;
 
+  @Column(name = "refresh_token")
+  private String refreshToken;
+
   @Embedded
   private Address address;
+
+  public void updateRefreshToken(String refreshToken) {
+    this.refreshToken = refreshToken;
+  }
+
+  public void deleteRefreshToken() {
+    this.refreshToken = null;
+  }
 }
