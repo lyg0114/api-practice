@@ -1,5 +1,6 @@
 package com.apipractice.global.security.filter;
 
+import static com.apipractice.global.security.filter.CustomAuthenticationFilter.LOGIN_PATH;
 import static com.apipractice.global.security.service.JwtService.TOKEN_HEADER_PREFIX;
 import static org.springframework.http.HttpHeaders.AUTHORIZATION;
 import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
@@ -41,6 +42,10 @@ public class CustomAuthorizationFilter extends OncePerRequestFilter {
   protected void doFilterInternal(
       HttpServletRequest request, HttpServletResponse response, FilterChain filterChain
   ) throws ServletException, IOException {
+
+    if (request.getServletPath().equals(LOGIN_PATH)) {
+      filterChain.doFilter(request, response);
+    }
 
     String authorizationHeader = request.getHeader(AUTHORIZATION);
     CustomErrorCode errorCode = null;
