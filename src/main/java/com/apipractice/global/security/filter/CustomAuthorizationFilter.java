@@ -43,7 +43,7 @@ public class CustomAuthorizationFilter extends OncePerRequestFilter {
       HttpServletRequest request, HttpServletResponse response, FilterChain filterChain
   ) throws ServletException, IOException {
 
-    if (request.getServletPath().equals(LOGIN_PATH)) {
+    if (isAuthenticationURL(request)) {
       filterChain.doFilter(request, response);
     }
 
@@ -51,7 +51,7 @@ public class CustomAuthorizationFilter extends OncePerRequestFilter {
     CustomErrorCode errorCode = null;
 
     // Header에 토큰이 존재하지 않을 시
-    if (authorizationHeader == null || !authorizationHeader.startsWith(TOKEN_HEADER_PREFIX)) {
+    if (!hasToken(authorizationHeader)) {
       errorCode = CustomErrorCode.TOKEN_NOT_EXIST;
     } else {
       try {
@@ -59,14 +59,15 @@ public class CustomAuthorizationFilter extends OncePerRequestFilter {
         DecodedJWT decodedJWT = jwtService.verifyToken(accessToken);
 
         String role = decodedJWT.getClaim("role").asString();
-        List<SimpleGrantedAuthority> authorities = Collections.singletonList(
-            new SimpleGrantedAuthority(role));
+        List<SimpleGrantedAuthority> authorities = Collections.singletonList(new SimpleGrantedAuthority(role));
         String email = decodedJWT.getSubject();
 
         // SecurityContextHolder에 accessToken 포함하여 저장
-        Authentication authToken = new UsernamePasswordAuthenticationToken(email, accessToken, authorities);
-        SecurityContextHolder.getContext().setAuthentication(authToken);
+        Authentication authentication = new UsernamePasswordAuthenticationToken(email, accessToken, authorities);
+        SecurityContextHolder.getContext().setAuthentication(authentication);
+
         filterChain.doFilter(request, response);
+
       } catch (TokenExpiredException e) {
         // Access Token 만료
         errorCode = CustomErrorCode.ACCESS_TOKEN_EXPIRED;
@@ -83,5 +84,13 @@ public class CustomAuthorizationFilter extends OncePerRequestFilter {
       ErrorResponse errorResponse = new ErrorResponse(errorCode);
       objectMapper.writeValue(response.getWriter(), errorResponse);
     }
+  }
+
+  private boolean hasToken(String authorizationHeader) {
+    return authorizationHeader == null || !authorizationHeader.startsWith(TOKEN_HEADER_PREFIX);
+  }
+
+  private boolean isAuthenticationURL(HttpServletRequest request) {
+    return request.getServletPath().equals(LOGIN_PATH);
   }
 }

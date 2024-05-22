@@ -27,8 +27,7 @@ public class UserAuthenticationProvider implements AuthenticationProvider {
     String username = authentication.getName();
     String password = (String) authentication.getCredentials();
 
-    CustomUserDetails userDetails
-        = (CustomUserDetails) userDetailsService.loadUserByUsername(username);
+    CustomUserDetails userDetails = (CustomUserDetails) userDetailsService.loadUserByUsername(username);
 
     if (!passwordEncoder.matches(password, userDetails.getPassword())) {
       throw new BadCredentialsException("비밀번호가 일치하지 않습니다.");
