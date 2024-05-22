@@ -22,6 +22,12 @@ import org.springframework.web.filter.OncePerRequestFilter;
  */
 public class LoginMethodTypeCheckFilter extends OncePerRequestFilter {
 
+  private final ObjectMapper objectMapper;
+
+  public LoginMethodTypeCheckFilter(ObjectMapper objectMapper) {
+    this.objectMapper = objectMapper;
+  }
+
   @Override
   protected void doFilterInternal(
       HttpServletRequest request, HttpServletResponse response, FilterChain filterChain
@@ -35,7 +41,7 @@ public class LoginMethodTypeCheckFilter extends OncePerRequestFilter {
       response.setContentType(APPLICATION_JSON_VALUE);
       response.setCharacterEncoding("utf-8");
       ErrorResponse errorResponse = new ErrorResponse(errorCode);
-      new ObjectMapper().writeValue(response.getWriter(), errorResponse);
+      objectMapper.writeValue(response.getWriter(), errorResponse);
 
       return;
     }

@@ -3,6 +3,8 @@ package com.apipractice.global.security;
 import com.apipractice.global.security.filter.CustomAuthenticationFilter;
 import com.apipractice.global.security.filter.CustomAuthorizationFilter;
 import com.apipractice.global.security.filter.LoginMethodTypeCheckFilter;
+import com.apipractice.global.security.service.JwtService;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.annotation.Bean;
@@ -32,6 +34,8 @@ public class SecurityConfig {
   private final AuthenticationManagerBuilder authManagerBuilder;
   private final AuthenticationSuccessHandler successHandler;
   private final AuthenticationFailureHandler failureHandler;
+  private final JwtService jwtService;
+  private final ObjectMapper objectMapper;
 
   /**
    * @param http
@@ -40,7 +44,8 @@ public class SecurityConfig {
    *  - 필터 호출 순서
    *     - 1. LoginMethodTypeCheckFilter.class
    *     - 2. CustomAuthorizationFilter.calss
-   *     - 3. CustomAuthenticationFilter.class
+   *     -----------------------------------------
+   *     - 3. CustomAuthenticationFilter.class // 로그인 때만 호출
    */
   @Bean
   public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
@@ -63,7 +68,7 @@ public class SecurityConfig {
    *  - 권한 체크 필터
    */
   private CustomAuthorizationFilter getAuthorizationFilter() {
-    return new CustomAuthorizationFilter();
+    return new CustomAuthorizationFilter(jwtService, objectMapper);
   }
 
   /**
@@ -79,6 +84,6 @@ public class SecurityConfig {
    *  - 로그인 method, url 체크 필터
    */
   private LoginMethodTypeCheckFilter getLoginMethodTypeCheckFilter() {
-    return new LoginMethodTypeCheckFilter();
+    return new LoginMethodTypeCheckFilter(objectMapper);
   }
 }
