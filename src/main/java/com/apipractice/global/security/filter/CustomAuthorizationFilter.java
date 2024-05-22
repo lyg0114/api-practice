@@ -17,7 +17,6 @@ import org.springframework.web.filter.OncePerRequestFilter;
  */
 @Slf4j
 @RequiredArgsConstructor
-@Component
 public class CustomAuthorizationFilter extends OncePerRequestFilter {
 
   @Override

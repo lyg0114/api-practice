@@ -4,7 +4,6 @@ import com.apipractice.global.security.filter.CustomAuthenticationFilter;
 import com.apipractice.global.security.filter.CustomAuthorizationFilter;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.boot.web.servlet.FilterRegistrationBean;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationProvider;
@@ -29,22 +28,16 @@ import org.springframework.security.web.authentication.AuthenticationSuccessHand
 public class SecurityConfig {
 
   private final AuthenticationProvider authenticationProvider;
-  private final CustomAuthorizationFilter authorizationFilter;
   private final AuthenticationManagerBuilder authManagerBuilder;
   private final AuthenticationSuccessHandler successHandler;
   private final AuthenticationFailureHandler failureHandler;
 
   @Bean
   public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
-    CustomAuthenticationFilter authenticationFilter = new CustomAuthenticationFilter(authManagerBuilder.getOrBuild());
-    authenticationFilter.setFilterProcessesUrl("/api/v1/members/login");
-    authenticationFilter.setAuthenticationSuccessHandler(successHandler);
-    authenticationFilter.setAuthenticationFailureHandler(failureHandler);
-
     http
         .csrf(AbstractHttpConfigurer::disable)
-        .addFilterBefore(authorizationFilter, AuthorizationFilter.class) // 접근 인가 필터, AuthorizationFilter 는 order가 마지막 바로 앞
-        .addFilter(authenticationFilter) // 로그인 필터
+        .addFilterBefore(getAuthorizationFilter(), AuthorizationFilter.class) // 접근 인가 필터, AuthorizationFilter 는 order가 마지막 바로 앞
+        .addFilter(getAuthenticationFilter()) // 로그인 필터
         .authenticationProvider(authenticationProvider)
         .authorizeHttpRequests(authorize -> authorize
             .anyRequest()
@@ -54,18 +47,15 @@ public class SecurityConfig {
     return http.build();
   }
 
-  @Bean
-  public FilterRegistrationBean<CustomAuthorizationFilter> customAuthorizationFilterRegistration(CustomAuthorizationFilter filter) {
-    FilterRegistrationBean<CustomAuthorizationFilter> registration = new FilterRegistrationBean<>(filter);
-    registration.setEnabled(false);
-    return registration;
+  private CustomAuthorizationFilter getAuthorizationFilter() {
+    return new CustomAuthorizationFilter();
   }
 
-  // TODO : CustomAuthenticationFilter 을 Bean 으로 등록할 수 있는지 체크 필요
-  // @Bean
-  public FilterRegistrationBean<CustomAuthenticationFilter> customAuthenticationFilterRegistration(CustomAuthenticationFilter filter) {
-    FilterRegistrationBean<CustomAuthenticationFilter> registration = new FilterRegistrationBean<>(filter);
-    registration.setEnabled(false);
-    return registration;
+  private CustomAuthenticationFilter getAuthenticationFilter() {
+    CustomAuthenticationFilter authenticationFilter = new CustomAuthenticationFilter(authManagerBuilder.getOrBuild());
+    authenticationFilter.setFilterProcessesUrl("/api/v1/members/login");
+    authenticationFilter.setAuthenticationSuccessHandler(successHandler);
+    authenticationFilter.setAuthenticationFailureHandler(failureHandler);
+    return authenticationFilter;
   }
 }
