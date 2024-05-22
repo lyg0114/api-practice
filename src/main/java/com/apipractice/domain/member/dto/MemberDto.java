@@ -11,6 +11,7 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 /**
  * @author : iyeong-gyo
@@ -53,6 +54,15 @@ public class MemberDto {
           .address(createAddress(city, street, zipCode))
           .build();
     }
+  }
+
+
+  @Getter @Setter
+  @NoArgsConstructor
+  @AllArgsConstructor
+  public static class LoginRequest {
+    private String email;
+    private String password;
   }
 
   @Getter
