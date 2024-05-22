@@ -52,10 +52,6 @@ public class SecurityConfig {
   }
 
   private CustomAuthenticationFilter getAuthenticationFilter() {
-    CustomAuthenticationFilter authenticationFilter = new CustomAuthenticationFilter(authManagerBuilder.getOrBuild());
-    authenticationFilter.setFilterProcessesUrl("/api/v1/members/login");
-    authenticationFilter.setAuthenticationSuccessHandler(successHandler);
-    authenticationFilter.setAuthenticationFailureHandler(failureHandler);
-    return authenticationFilter;
+    return new CustomAuthenticationFilter(authManagerBuilder, successHandler, failureHandler);
   }
 }
