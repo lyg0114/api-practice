@@ -27,20 +27,16 @@ public class LoginMethodTypeCheckFilter extends OncePerRequestFilter {
       HttpServletRequest request, HttpServletResponse response, FilterChain filterChain
   ) throws ServletException, IOException {
 
-    CustomErrorCode errorCode = null;
-
     if (request.getMethod().equals(HttpMethod.GET.name())
         && request.getRequestURI().equals(LOGIN_PATH)) {
 
-      errorCode = INVALID_HTTP_METHOD;
-    }
-
-    if (errorCode != null) {
+      CustomErrorCode errorCode = INVALID_HTTP_METHOD;
       response.setStatus(errorCode.getHttpStatus().value());
       response.setContentType(APPLICATION_JSON_VALUE);
       response.setCharacterEncoding("utf-8");
       ErrorResponse errorResponse = new ErrorResponse(errorCode);
       new ObjectMapper().writeValue(response.getWriter(), errorResponse);
+
       return;
     }
 

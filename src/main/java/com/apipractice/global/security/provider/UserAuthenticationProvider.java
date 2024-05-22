@@ -30,7 +30,6 @@ public class UserAuthenticationProvider implements AuthenticationProvider {
     CustomUserDetails userDetails
         = (CustomUserDetails) userDetailsService.loadUserByUsername(username);
 
-    // PW Check
     if (!passwordEncoder.matches(password, userDetails.getPassword())) {
       throw new BadCredentialsException("비밀번호가 일치하지 않습니다.");
     }

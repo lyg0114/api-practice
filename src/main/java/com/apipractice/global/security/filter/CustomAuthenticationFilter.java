@@ -42,9 +42,7 @@ public class CustomAuthenticationFilter extends UsernamePasswordAuthenticationFi
   @Override
   public Authentication attemptAuthentication(HttpServletRequest request, HttpServletResponse response)
       throws AuthenticationException {
-
     LoginRequest loginRequest = createLoginRequest(request);
-    //TODO : authorities 정보도 같이 넣을 수 있도록 처리
     Authentication token = new UsernamePasswordAuthenticationToken(loginRequest.getEmail(), loginRequest.getPassword());
     return authenticationManager.authenticate(token);
   }
