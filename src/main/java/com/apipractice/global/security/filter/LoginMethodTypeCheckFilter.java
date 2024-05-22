@@ -5,7 +5,6 @@ import static com.apipractice.global.security.filter.CustomAuthenticationFilter.
 import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 
 import com.apipractice.global.exception.CustomErrorCode;
-import com.apipractice.global.exception.CustomException;
 import com.apipractice.global.exception.ErrorResponse;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.servlet.FilterChain;

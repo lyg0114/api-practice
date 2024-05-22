@@ -33,6 +33,15 @@ public class SecurityConfig {
   private final AuthenticationSuccessHandler successHandler;
   private final AuthenticationFailureHandler failureHandler;
 
+  /**
+   * @param http
+   * @return
+   * @throws Exception
+   *  - 필터 호출 순서
+   *     - 1. LoginMethodTypeCheckFilter.class
+   *     - 2. CustomAuthorizationFilter.calss
+   *     - 3. CustomAuthenticationFilter.class
+   */
   @Bean
   public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
     http
