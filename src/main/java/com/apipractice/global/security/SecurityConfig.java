@@ -2,6 +2,7 @@ package com.apipractice.global.security;
 
 import com.apipractice.global.security.filter.CustomAuthenticationFilter;
 import com.apipractice.global.security.filter.CustomAuthorizationFilter;
+import com.apipractice.global.security.filter.LoginMethodTypeCheckFilter;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.annotation.Bean;
@@ -12,9 +13,9 @@ import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
 import org.springframework.security.web.SecurityFilterChain;
-import org.springframework.security.web.access.intercept.AuthorizationFilter;
 import org.springframework.security.web.authentication.AuthenticationFailureHandler;
 import org.springframework.security.web.authentication.AuthenticationSuccessHandler;
+import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
 /**
  * @author : iyeong-gyo
@@ -36,9 +37,10 @@ public class SecurityConfig {
   public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
     http
         .csrf(AbstractHttpConfigurer::disable)
-        .addFilterBefore(getAuthorizationFilter(), AuthorizationFilter.class) // 접근 인가 필터, AuthorizationFilter 는 order가 마지막 바로 앞
-        .addFilter(getAuthenticationFilter()) // 로그인 필터
+        .addFilter(getAuthenticationFilter())
         .authenticationProvider(authenticationProvider)
+        .addFilterBefore(getAuthorizationFilter(), UsernamePasswordAuthenticationFilter.class)
+        .addFilterBefore(getLoginMethodTypeCheckFilter(), CustomAuthorizationFilter.class)
         .authorizeHttpRequests(authorize -> authorize
             .anyRequest()
             .permitAll()
@@ -47,11 +49,27 @@ public class SecurityConfig {
     return http.build();
   }
 
+  /**
+   * @return CustomAuthenticationFilter
+   *  - 권한 체크 필터
+   */
   private CustomAuthorizationFilter getAuthorizationFilter() {
     return new CustomAuthorizationFilter();
   }
 
+  /**
+   * @return CustomAuthenticationFilter
+   *  - 인증 필터
+   */
   private CustomAuthenticationFilter getAuthenticationFilter() {
     return new CustomAuthenticationFilter(authManagerBuilder, successHandler, failureHandler);
+  }
+
+  /**
+   * @return CustomAuthenticationFilter
+   *  - 로그인 method, url 체크 필터
+   */
+  private LoginMethodTypeCheckFilter getLoginMethodTypeCheckFilter() {
+    return new LoginMethodTypeCheckFilter();
   }
 }
