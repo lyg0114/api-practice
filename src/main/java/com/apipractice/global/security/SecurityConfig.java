@@ -1,5 +1,8 @@
 package com.apipractice.global.security;
 
+import static com.apipractice.global.security.type.RoleType.*;
+import static org.springframework.security.web.util.matcher.AntPathRequestMatcher.antMatcher;
+
 import com.apipractice.global.security.filter.CustomAuthenticationFilter;
 import com.apipractice.global.security.filter.CustomAuthorizationFilter;
 import com.apipractice.global.security.filter.LoginMethodTypeCheckFilter;
@@ -10,10 +13,12 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationProvider;
+import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
+import org.springframework.security.config.annotation.web.configurers.AuthorizeHttpRequestsConfigurer;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.AuthenticationFailureHandler;
 import org.springframework.security.web.authentication.AuthenticationSuccessHandler;
@@ -55,12 +60,15 @@ public class SecurityConfig {
         .authenticationProvider(authenticationProvider)
         .addFilterBefore(getAuthorizationFilter(), UsernamePasswordAuthenticationFilter.class)
         .addFilterBefore(getLoginMethodTypeCheckFilter(), CustomAuthorizationFilter.class)
-        .authorizeHttpRequests(authorize -> authorize
-            .anyRequest()
-            .permitAll()
-        )
-    ;
+        .authorizeHttpRequests(checkAuth());
     return http.build();
+  }
+
+  private Customizer<AuthorizeHttpRequestsConfigurer<HttpSecurity>.AuthorizationManagerRequestMatcherRegistry> checkAuth() {
+    return authorize -> authorize
+        .requestMatchers(antMatcher("/api/v1/members/hello/**")).hasRole(USER.name())
+        .anyRequest()
+        .authenticated();
   }
 
   /**
