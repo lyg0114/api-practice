@@ -4,7 +4,9 @@ import com.apipractice.domain.member.application.MemberService;
 import com.apipractice.domain.member.dto.MemberDto;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -16,6 +18,7 @@ import org.springframework.web.bind.annotation.RestController;
  * @package : com.apipractice.domain.member.api
  * @since : 18.05.24
  */
+@Slf4j
 @RequiredArgsConstructor
 @RequestMapping("/api/v1/members")
 @RestController
@@ -32,11 +35,11 @@ public class MemberApiController {
   }
 
   //TODO : 샘플 api로서 추후 제거
-  @PostMapping("/hello/{param}")
+  @GetMapping("/hello/{param}")
   public ResponseEntity<Void> hello(@PathVariable String param) {
-    System.out.println("########################################");
-    System.out.println("param = " + param);
-    System.out.println("########################################");
+    log.info("########################################");
+    log.info("call hello + {}", param);
+    log.info("########################################");
     return ResponseEntity.ok().build();
   }
 }

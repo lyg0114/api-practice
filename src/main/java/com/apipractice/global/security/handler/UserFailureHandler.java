@@ -3,6 +3,7 @@ package com.apipractice.global.security.handler;
 import static com.apipractice.global.exception.CustomErrorCode.LOGIN_FAILED;
 import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 
+import com.apipractice.global.exception.CustomException;
 import com.apipractice.global.exception.ErrorResponse;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.servlet.http.HttpServletRequest;
@@ -27,15 +28,14 @@ public class UserFailureHandler implements AuthenticationFailureHandler {
   @Override
   public void onAuthenticationFailure(
       HttpServletRequest request, HttpServletResponse response, AuthenticationException exception
-  ) {
-    try {
-      ErrorResponse errorResponse = new ErrorResponse(LOGIN_FAILED);
-      response.setStatus(LOGIN_FAILED.getHttpStatus().value());
-      response.setContentType(APPLICATION_JSON_VALUE);
-      response.setCharacterEncoding("utf-8");
-      objectMapper.writeValue(response.getWriter(), errorResponse);
-    } catch (IOException e) {
-      throw new RuntimeException(e); //TODO : 적절한 예외로 변환할 것
-    }
+  ) throws IOException {
+    response.setStatus(LOGIN_FAILED.getHttpStatus().value());
+    response.setContentType(APPLICATION_JSON_VALUE);
+    response.setCharacterEncoding("utf-8");
+
+    objectMapper.writeValue(
+        response.getWriter(),
+        new ErrorResponse(new CustomException(LOGIN_FAILED, exception.getMessage()))
+    );
   }
 }

@@ -1,21 +1,29 @@
 package com.apipractice.global.security;
 
+import static com.apipractice.global.security.type.RoleType.*;
+import static org.springframework.http.HttpMethod.GET;
+import static org.springframework.security.web.util.matcher.AntPathRequestMatcher.antMatcher;
+
 import com.apipractice.global.security.filter.CustomAuthenticationFilter;
 import com.apipractice.global.security.filter.CustomAuthorizationFilter;
+import com.apipractice.global.security.filter.LoginMethodTypeCheckFilter;
+import com.apipractice.global.security.service.JwtService;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.boot.web.servlet.FilterRegistrationBean;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationProvider;
+import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
+import org.springframework.security.config.annotation.web.configurers.AuthorizeHttpRequestsConfigurer;
 import org.springframework.security.web.SecurityFilterChain;
-import org.springframework.security.web.access.intercept.AuthorizationFilter;
 import org.springframework.security.web.authentication.AuthenticationFailureHandler;
 import org.springframework.security.web.authentication.AuthenticationSuccessHandler;
+import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
 /**
  * @author : iyeong-gyo
@@ -29,43 +37,65 @@ import org.springframework.security.web.authentication.AuthenticationSuccessHand
 public class SecurityConfig {
 
   private final AuthenticationProvider authenticationProvider;
-  private final CustomAuthorizationFilter authorizationFilter;
   private final AuthenticationManagerBuilder authManagerBuilder;
   private final AuthenticationSuccessHandler successHandler;
   private final AuthenticationFailureHandler failureHandler;
+  private final JwtService jwtService;
+  private final ObjectMapper objectMapper;
 
+  /**
+   * @param http
+   * @return
+   * @throws Exception
+   *  - 필터 호출 순서
+   *     - 1. LoginMethodTypeCheckFilter.class
+   *     - 2. CustomAuthorizationFilter.calss
+   *     -----------------------------------------
+   *     - 3. CustomAuthenticationFilter.class // 로그인 때만 호출
+   */
   @Bean
   public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
-    CustomAuthenticationFilter authenticationFilter = new CustomAuthenticationFilter(authManagerBuilder.getOrBuild());
-    authenticationFilter.setFilterProcessesUrl("/api/v1/members/login");
-    authenticationFilter.setAuthenticationSuccessHandler(successHandler);
-    authenticationFilter.setAuthenticationFailureHandler(failureHandler);
-
     http
         .csrf(AbstractHttpConfigurer::disable)
-        .addFilterBefore(authorizationFilter, AuthorizationFilter.class) // 접근 인가 필터, AuthorizationFilter 는 order가 마지막 바로 앞
-        .addFilter(authenticationFilter) // 로그인 필터
+        .addFilter(getAuthenticationFilter())
         .authenticationProvider(authenticationProvider)
-        .authorizeHttpRequests(authorize -> authorize
-            .anyRequest()
-            .permitAll()
-        )
-    ;
+        .addFilterBefore(getAuthorizationFilter(), UsernamePasswordAuthenticationFilter.class)
+        .addFilterBefore(getLoginMethodTypeCheckFilter(), CustomAuthorizationFilter.class)
+        .authorizeHttpRequests(checkResourceAuth());
     return http.build();
   }
 
-  @Bean
-  public FilterRegistrationBean<CustomAuthorizationFilter> customAuthorizationFilterRegistration(CustomAuthorizationFilter filter) {
-    FilterRegistrationBean<CustomAuthorizationFilter> registration = new FilterRegistrationBean<>(filter);
-    registration.setEnabled(false);
-    return registration;
+  /**
+   * - Resource 접근 제어
+   */
+  private Customizer<AuthorizeHttpRequestsConfigurer<HttpSecurity>.AuthorizationManagerRequestMatcherRegistry> checkResourceAuth() {
+    return authorize -> authorize
+        .requestMatchers(antMatcher(GET,"/api/v1/members/hello/**")).hasRole(USER.name())
+        .anyRequest()
+        .authenticated();
   }
 
-  // TODO : CustomAuthenticationFilter 을 Bean 으로 등록할 수 있는지 체크 필요
-  // @Bean
-  public FilterRegistrationBean<CustomAuthenticationFilter> customAuthenticationFilterRegistration(CustomAuthenticationFilter filter) {
-    FilterRegistrationBean<CustomAuthenticationFilter> registration = new FilterRegistrationBean<>(filter);
-    registration.setEnabled(false);
-    return registration;
+  /**
+   * @return CustomAuthenticationFilter
+   *  - 권한 체크 필터
+   */
+  private CustomAuthorizationFilter getAuthorizationFilter() {
+    return new CustomAuthorizationFilter(jwtService, objectMapper);
+  }
+
+  /**
+   * @return CustomAuthenticationFilter
+   *  - 인증 필터
+   */
+  private CustomAuthenticationFilter getAuthenticationFilter() {
+    return new CustomAuthenticationFilter(authManagerBuilder, successHandler, failureHandler);
+  }
+
+  /**
+   * @return CustomAuthenticationFilter
+   *  - 로그인 method, url 체크 필터
+   */
+  private LoginMethodTypeCheckFilter getLoginMethodTypeCheckFilter() {
+    return new LoginMethodTypeCheckFilter(objectMapper);
   }
 }
