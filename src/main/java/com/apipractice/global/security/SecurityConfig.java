@@ -21,6 +21,7 @@ import org.springframework.security.config.annotation.web.configuration.EnableWe
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
 import org.springframework.security.config.annotation.web.configurers.AuthorizeHttpRequestsConfigurer;
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.security.web.access.AccessDeniedHandler;
 import org.springframework.security.web.authentication.AuthenticationFailureHandler;
 import org.springframework.security.web.authentication.AuthenticationSuccessHandler;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
@@ -38,8 +39,11 @@ public class SecurityConfig {
 
   private final AuthenticationProvider authenticationProvider;
   private final AuthenticationManagerBuilder authManagerBuilder;
-  private final AuthenticationSuccessHandler successHandler;
-  private final AuthenticationFailureHandler failureHandler;
+
+  private final AuthenticationSuccessHandler authenticationSuccessHandler;
+  private final AuthenticationFailureHandler authenticationFailureHandler;
+  private final AccessDeniedHandler accessDeniedHandler;
+
   private final JwtService jwtService;
   private final ObjectMapper objectMapper;
 
@@ -61,7 +65,9 @@ public class SecurityConfig {
         .authenticationProvider(authenticationProvider)
         .addFilterBefore(getAuthorizationFilter(), UsernamePasswordAuthenticationFilter.class)
         .addFilterBefore(getLoginMethodTypeCheckFilter(), CustomAuthorizationFilter.class)
-        .authorizeHttpRequests(checkResourceAuth());
+        .authorizeHttpRequests(checkResourceAuth())
+        .exceptionHandling(customizer -> customizer.accessDeniedHandler(accessDeniedHandler))
+    ;
     return http.build();
   }
 
@@ -70,7 +76,9 @@ public class SecurityConfig {
    */
   private Customizer<AuthorizeHttpRequestsConfigurer<HttpSecurity>.AuthorizationManagerRequestMatcherRegistry> checkResourceAuth() {
     return authorize -> authorize
-        .requestMatchers(antMatcher(GET,"/api/v1/members/hello/**")).hasRole(USER.name())
+        .requestMatchers(antMatcher(GET,"/api/v1/members/guest/**")).hasRole(GUEST.name())
+        .requestMatchers(antMatcher(GET,"/api/v1/members/user/**")).hasRole(USER.name())
+        .requestMatchers(antMatcher(GET,"/api/v1/members/admin/**")).hasRole(ADMIN.name())
         .anyRequest()
         .authenticated();
   }
@@ -88,7 +96,8 @@ public class SecurityConfig {
    *  - 인증 필터
    */
   private CustomAuthenticationFilter getAuthenticationFilter() {
-    return new CustomAuthenticationFilter(authManagerBuilder, successHandler, failureHandler);
+    return new CustomAuthenticationFilter(
+        authManagerBuilder, authenticationSuccessHandler, authenticationFailureHandler);
   }
 
   /**
