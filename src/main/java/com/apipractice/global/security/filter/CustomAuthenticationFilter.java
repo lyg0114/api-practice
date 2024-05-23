@@ -19,6 +19,8 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
  * @author : iyeong-gyo
  * @package : com.apipractice.global.security.filter
  * @since : 20.05.24
+ *
+ *  - id, pw를 이용한 사용자 체크 필터
  */
 public class CustomAuthenticationFilter extends UsernamePasswordAuthenticationFilter {
 

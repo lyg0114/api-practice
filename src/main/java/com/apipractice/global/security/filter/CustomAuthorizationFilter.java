@@ -30,6 +30,8 @@ import org.springframework.web.filter.OncePerRequestFilter;
  * @author : iyeong-gyo
  * @package : com.apipractice.global.security.filter
  * @since : 20.05.24
+ *
+ *  - JWT 토큰으로 권한을 체크하는 필터
  */
 @Slf4j
 @RequiredArgsConstructor

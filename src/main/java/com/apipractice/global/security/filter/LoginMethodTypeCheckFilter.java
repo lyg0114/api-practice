@@ -19,6 +19,9 @@ import org.springframework.web.filter.OncePerRequestFilter;
  * @author : iyeong-gyo
  * @package : com.apipractice.global.security.filter
  * @since : 22.05.24
+ *
+ * - 로그인 요청의 메서드 타입을 체크하는 필터
+ *
  */
 public class LoginMethodTypeCheckFilter extends OncePerRequestFilter {
 
