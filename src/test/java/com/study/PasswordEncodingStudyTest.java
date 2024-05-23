@@ -12,7 +12,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
  * @package : com.study
  * @since : 22.05.24
  */
-public class PasswordEncodingTest {
+public class PasswordEncodingStudyTest {
 
   public PasswordEncoder passwordEncoder() {
     return new BCryptPasswordEncoder();
