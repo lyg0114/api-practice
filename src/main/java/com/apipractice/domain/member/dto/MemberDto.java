@@ -37,6 +37,7 @@ public class MemberDto {
         message = "비밀번호는 영어, 숫자, 특수문자를 포함하여 8~15자로 입력해주세요.")
     private String password;
 
+    @NotBlank(message = "닉네임을 입력해주세요.")
     private String nickname;
 
     private String city;

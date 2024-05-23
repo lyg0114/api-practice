@@ -2,6 +2,7 @@ package com.apipractice.domain.member.application.service;
 
 import static com.apipractice.global.exception.CustomErrorCode.EMAIL_ALREADY_EXIST;
 import static com.apipractice.global.exception.CustomErrorCode.NICKNAME_ALREADY_EXIST;
+import static org.springframework.util.StringUtils.hasText;
 
 import com.apipractice.domain.member.dto.MemberDto;
 import com.apipractice.domain.member.application.repository.MemberRepository;
@@ -27,13 +28,13 @@ public class MemberService {
   }
 
   private void validateDuplicateEmail(String email) {
-    if (memberRepository.existsByEmail(email)) {
+    if (hasText(email) && memberRepository.existsByEmail(email)) {
       throw new CustomException(EMAIL_ALREADY_EXIST);
     }
   }
 
   private void validateDuplicateNickName(String nickname) {
-    if (memberRepository.existsByNickname(nickname)) {
+    if (hasText(nickname) && memberRepository.existsByNickname(nickname)) {
       throw new CustomException(NICKNAME_ALREADY_EXIST);
     }
   }
