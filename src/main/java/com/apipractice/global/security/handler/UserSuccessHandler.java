@@ -4,7 +4,7 @@ import static com.apipractice.global.security.type.RoleType.USER;
 import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 
 import com.apipractice.domain.member.entity.Member;
-import com.apipractice.domain.member.entity.MemberRepository;
+import com.apipractice.domain.member.application.repository.MemberRepository;
 import com.apipractice.global.security.service.CustomUserDetails;
 import com.apipractice.global.security.service.JwtService;
 import com.fasterxml.jackson.databind.ObjectMapper;

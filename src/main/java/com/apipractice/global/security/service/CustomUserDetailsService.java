@@ -1,7 +1,7 @@
 package com.apipractice.global.security.service;
 
 import com.apipractice.domain.member.entity.Member;
-import com.apipractice.domain.member.entity.MemberRepository;
+import com.apipractice.domain.member.application.repository.MemberRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;

@@ -1,5 +1,6 @@
-package com.apipractice.domain.member.entity;
+package com.apipractice.domain.member.application.repository;
 
+import com.apipractice.domain.member.entity.Member;
 import java.util.Optional;
 import org.springframework.data.jpa.repository.JpaRepository;
 

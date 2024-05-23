@@ -1,10 +1,10 @@
-package com.apipractice.domain.member.application;
+package com.apipractice.domain.member.application.service;
 
 import static com.apipractice.global.exception.CustomErrorCode.EMAIL_ALREADY_EXIST;
 import static com.apipractice.global.exception.CustomErrorCode.NICKNAME_ALREADY_EXIST;
 
 import com.apipractice.domain.member.dto.MemberDto;
-import com.apipractice.domain.member.entity.MemberRepository;
+import com.apipractice.domain.member.application.repository.MemberRepository;
 import com.apipractice.global.exception.CustomException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;

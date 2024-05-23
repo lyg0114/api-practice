@@ -4,9 +4,9 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.BDDMockito.given;
 
-import com.apipractice.domain.member.application.MemberService;
+import com.apipractice.domain.member.application.service.MemberService;
 import com.apipractice.domain.member.dto.MemberDto.SignUpRequest;
-import com.apipractice.domain.member.entity.MemberRepository;
+import com.apipractice.domain.member.application.repository.MemberRepository;
 import com.apipractice.global.exception.CustomException;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;

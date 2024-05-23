@@ -1,6 +1,6 @@
 package com.apipractice.domain.member.api;
 
-import com.apipractice.domain.member.application.MemberService;
+import com.apipractice.domain.member.application.service.MemberService;
 import com.apipractice.domain.member.dto.MemberDto;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
