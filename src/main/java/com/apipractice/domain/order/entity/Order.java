@@ -43,6 +43,13 @@ public class Order extends BaseTimeEntity {
   @Column(name = "order_id")
   private Long id;
 
+  @Column(name = "order_date")
+  private LocalDateTime orderDate;
+
+  @Enumerated(value = EnumType.STRING)
+  @Column(name = "order_status")
+  private OrderStatus orderStatus;
+
   @ManyToOne(fetch = LAZY)
   @JoinColumn(name = "member_id")
   private Member member;
@@ -53,11 +60,4 @@ public class Order extends BaseTimeEntity {
   @OneToOne
   @JoinColumn(name = "delivery_id")
   private Delivery delivery;
-
-  @Column(name = "order_date")
-  private LocalDateTime orderDate;
-
-  @Enumerated(value = EnumType.STRING)
-  @Column(name = "order_status")
-  private OrderStatus orderStatus;
 }

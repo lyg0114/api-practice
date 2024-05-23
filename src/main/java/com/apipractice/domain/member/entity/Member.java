@@ -49,14 +49,14 @@ public class Member extends BaseTimeEntity {
   @Column(name = "password", nullable = false)
   private String password;
 
-  @OneToMany(mappedBy = "member")
-  private List<Order> orders;
-
   @Column(name = "refresh_token")
   private String refreshToken;
 
   @Embedded
   private Address address;
+
+  @OneToMany(mappedBy = "member")
+  private List<Order> orders;
 
   @OneToMany(mappedBy = "member")
   private List<MemberRole> memberRoles;

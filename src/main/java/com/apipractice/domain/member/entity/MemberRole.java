@@ -43,5 +43,4 @@ public class MemberRole extends BaseTimeEntity {
   @ManyToOne(fetch = LAZY)
   @JoinColumn(name = "role_id")
   private Role role;
-
 }
