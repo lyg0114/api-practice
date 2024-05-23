@@ -1,6 +1,7 @@
 package com.apipractice.global.security;
 
 import static com.apipractice.global.security.type.RoleType.*;
+import static org.springframework.http.HttpMethod.GET;
 import static org.springframework.security.web.util.matcher.AntPathRequestMatcher.antMatcher;
 
 import com.apipractice.global.security.filter.CustomAuthenticationFilter;
@@ -60,13 +61,16 @@ public class SecurityConfig {
         .authenticationProvider(authenticationProvider)
         .addFilterBefore(getAuthorizationFilter(), UsernamePasswordAuthenticationFilter.class)
         .addFilterBefore(getLoginMethodTypeCheckFilter(), CustomAuthorizationFilter.class)
-        .authorizeHttpRequests(checkAuth());
+        .authorizeHttpRequests(checkResourceAuth());
     return http.build();
   }
 
-  private Customizer<AuthorizeHttpRequestsConfigurer<HttpSecurity>.AuthorizationManagerRequestMatcherRegistry> checkAuth() {
+  /**
+   * - Resource 접근 제어
+   */
+  private Customizer<AuthorizeHttpRequestsConfigurer<HttpSecurity>.AuthorizationManagerRequestMatcherRegistry> checkResourceAuth() {
     return authorize -> authorize
-        .requestMatchers(antMatcher("/api/v1/members/hello/**")).hasRole(USER.name())
+        .requestMatchers(antMatcher(GET,"/api/v1/members/hello/**")).hasRole(USER.name())
         .anyRequest()
         .authenticated();
   }
