@@ -43,7 +43,7 @@ public class CustomAuthorizationFilter extends OncePerRequestFilter {
       HttpServletRequest request, HttpServletResponse response, FilterChain filterChain
   ) throws ServletException, IOException {
 
-    if (isAuthenticationURL(request)) {
+    if (isNoNeedAuthenticationURL(request)) {
       filterChain.doFilter(request, response);
     }
 
@@ -87,10 +87,10 @@ public class CustomAuthorizationFilter extends OncePerRequestFilter {
   }
 
   private boolean hasToken(String authorizationHeader) {
-    return authorizationHeader == null || !authorizationHeader.startsWith(TOKEN_HEADER_PREFIX);
+    return authorizationHeader != null && authorizationHeader.startsWith(TOKEN_HEADER_PREFIX);
   }
 
-  private boolean isAuthenticationURL(HttpServletRequest request) {
+  private boolean isNoNeedAuthenticationURL(HttpServletRequest request) {
     return request.getServletPath().equals(LOGIN_PATH);
   }
 }
