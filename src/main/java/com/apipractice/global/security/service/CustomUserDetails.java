@@ -31,7 +31,7 @@ public class CustomUserDetails implements UserDetails {
     this.member = member;
     List<Role> roles = member.getRoles();
 
-    if (isNull(roles)) {
+    if (isNull(roles) || roles.isEmpty()) {
       throw new CustomException(USER_NOT_HAVE_ROLE);
     }
 
