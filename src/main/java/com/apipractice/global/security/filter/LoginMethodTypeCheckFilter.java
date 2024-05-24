@@ -2,6 +2,7 @@ package com.apipractice.global.security.filter;
 
 import static com.apipractice.global.exception.CustomErrorCode.INVALID_HTTP_METHOD;
 import static com.apipractice.global.security.filter.CustomAuthenticationFilter.LOGIN_PATH;
+import static org.springframework.http.HttpMethod.GET;
 import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 
 import com.apipractice.global.exception.CustomErrorCode;
@@ -35,8 +36,7 @@ public class LoginMethodTypeCheckFilter extends OncePerRequestFilter {
       HttpServletRequest request, HttpServletResponse response, FilterChain filterChain
   ) throws ServletException, IOException {
 
-    if (request.getMethod().equals(HttpMethod.GET.name())
-        && request.getRequestURI().equals(LOGIN_PATH)) {
+    if (request.getMethod().equals(GET.name()) && request.getServletPath().equals(LOGIN_PATH)) {
 
       CustomErrorCode errorCode = INVALID_HTTP_METHOD;
       response.setStatus(errorCode.getHttpStatus().value());

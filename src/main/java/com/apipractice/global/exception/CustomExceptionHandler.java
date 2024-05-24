@@ -1,5 +1,6 @@
 package com.apipractice.global.exception;
 
+import static com.apipractice.global.exception.CustomErrorCode.ACCESS_DENIED;
 import static com.apipractice.global.exception.CustomErrorCode.INVALID_HTTP_METHOD;
 import static com.apipractice.global.exception.CustomErrorCode.INVALID_VALUE;
 import static com.apipractice.global.exception.CustomErrorCode.UNKNON_INVALID_VALUE;
@@ -9,6 +10,8 @@ import java.util.Objects;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.AccessDeniedException;
+import org.springframework.security.core.AuthenticationException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
@@ -24,9 +27,7 @@ import org.springframework.web.servlet.resource.NoResourceFoundException;
 public class CustomExceptionHandler {
 
   @ExceptionHandler(CustomException.class)
-  public ResponseEntity<ErrorResponse> handleCustomException(
-      CustomException ex, HttpServletRequest request
-  ) {
+  public ResponseEntity<ErrorResponse> handleCustomException(CustomException ex, HttpServletRequest request) {
 
     log.error("[CustomException] url: {} | errorCode: {} | errorMessage: {} | cause Exception: ",
         request.getRequestURL(), ex.getErrorCode(), ex.getErrorMessage(), ex.getCause());
@@ -38,10 +39,7 @@ public class CustomExceptionHandler {
   }
 
   @ExceptionHandler(MethodArgumentNotValidException.class)
-  public ResponseEntity<ErrorResponse> handleValidationException(
-      MethodArgumentNotValidException ex,
-      HttpServletRequest request
-  ) {
+  public ResponseEntity<ErrorResponse> handleValidationException(MethodArgumentNotValidException ex, HttpServletRequest request) {
 
     String validationMessage = Objects.requireNonNull(ex.getFieldError()).getDefaultMessage();
     log.error( "[MethodArgumentNotValidException] url: {} | errorCode: {} | errorMessage: {} | cause Exception: ",
@@ -55,9 +53,7 @@ public class CustomExceptionHandler {
   }
 
   @ExceptionHandler(NoResourceFoundException.class)
-  public ResponseEntity<ErrorResponse> handleNoResourceFoundException(
-      NoResourceFoundException ex, HttpServletRequest request
-  ) {
+  public ResponseEntity<ErrorResponse> handleNoResourceFoundException(NoResourceFoundException ex, HttpServletRequest request) {
 
     log.error( "[NoResourceFoundException] url: {} | errorCode: {} | errorMessage: {} | cause Exception: ",
         request.getRequestURL(), INVALID_HTTP_METHOD, INVALID_HTTP_METHOD.getErrorMessage(), ex);
@@ -69,12 +65,23 @@ public class CustomExceptionHandler {
 
   }
 
-  @ExceptionHandler(DataIntegrityViolationException.class)
-  public ResponseEntity<ErrorResponse> handleDataIntegrityViolationException(
-      DataIntegrityViolationException ex, HttpServletRequest request
-  ) {
+  @ExceptionHandler(AccessDeniedException.class)
+  public ResponseEntity<ErrorResponse> handleAccessDeniedException(AccessDeniedException ex, HttpServletRequest request) {
 
-    log.error("[Common Exception] url: {} | errorMessage: {} | Exception ex: {}",
+    log.error( "[AccessDeniedException] url: {} | errorCode: {} | errorMessage: {} | cause Exception: ",
+        request.getRequestURL(), ACCESS_DENIED, ACCESS_DENIED.getErrorMessage(), ex);
+
+    CustomException customException = new CustomException(ACCESS_DENIED);
+    return ResponseEntity
+        .status(INVALID_VALUE.getHttpStatus())
+        .body(new ErrorResponse(customException));
+
+  }
+
+  @ExceptionHandler(DataIntegrityViolationException.class)
+  public ResponseEntity<ErrorResponse> handleDataIntegrityViolationException(DataIntegrityViolationException ex, HttpServletRequest request) {
+
+    log.error("[DataIntegrityViolationException Exception] url: {} | errorMessage: {} | Exception ex: {}",
         request.getRequestURL(), ex.getMessage(), ex.getClass().getName());
 
     CustomException customException = new CustomException(INVALID_VALUE, "입력 값이 잘못 되었습니다.");
