@@ -34,11 +34,28 @@ public class MemberApiController {
     return ResponseEntity.ok().build();
   }
 
-  //TODO : 샘플 api로서 추후 제거
-  @GetMapping("/hello/{param}")
-  public ResponseEntity<Void> hello(@PathVariable String param) {
+  @GetMapping("/guest/{param}")
+  public ResponseEntity<Void> guest(@PathVariable String param) {
     log.info("########################################");
-    log.info("call hello + {}", param);
+    log.info("call guest + {}", param);
+    log.info("########################################");
+    return ResponseEntity.ok().build();
+  }
+
+  //TODO : 샘플 api로서 추후 제거
+  @GetMapping("/user/{param}")
+  public ResponseEntity<Void> user(@PathVariable String param) {
+    log.info("########################################");
+    log.info("call user + {}", param);
+    log.info("########################################");
+    return ResponseEntity.ok().build();
+  }
+
+  //TODO : 샘플 api로서 추후 제거
+  @GetMapping("/admin/{param}")
+  public ResponseEntity<Void> admin(@PathVariable String param) {
+    log.info("########################################");
+    log.info("call admin + {}", param);
     log.info("########################################");
     return ResponseEntity.ok().build();
   }
