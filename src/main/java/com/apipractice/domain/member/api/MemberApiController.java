@@ -6,6 +6,7 @@ import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -31,32 +32,6 @@ public class MemberApiController {
       @RequestBody @Valid MemberDto.SignUpRequest requestDto
   ) {
     memberService.signUp(requestDto);
-    return ResponseEntity.ok().build();
-  }
-
-  @GetMapping("/guest/{param}")
-  public ResponseEntity<Void> guest(@PathVariable String param) {
-    log.info("########################################");
-    log.info("call guest + {}", param);
-    log.info("########################################");
-    return ResponseEntity.ok().build();
-  }
-
-  //TODO : 샘플 api로서 추후 제거
-  @GetMapping("/user/{param}")
-  public ResponseEntity<Void> user(@PathVariable String param) {
-    log.info("########################################");
-    log.info("call user + {}", param);
-    log.info("########################################");
-    return ResponseEntity.ok().build();
-  }
-
-  //TODO : 샘플 api로서 추후 제거
-  @GetMapping("/admin/{param}")
-  public ResponseEntity<Void> admin(@PathVariable String param) {
-    log.info("########################################");
-    log.info("call admin + {}", param);
-    log.info("########################################");
     return ResponseEntity.ok().build();
   }
 }
