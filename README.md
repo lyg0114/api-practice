@@ -27,7 +27,7 @@
 * style: 스타일 관련 수정 (코드 포맷팅, 세미콜론 누락, 코드 자체의 변경이 없는 경우)
 * refactor: 코드 리팩토링
 * test: 테스트 관련 코드
-* chore: 빌드 관련 수정 (application.yml, build.gradle, .gitignore ..)
+* chore: 빌드 관련 수정 (application.properties, build.gradle, .gitignore ..)
 
 ### REF
 [SpringSecurity](https://docs.spring.io/spring-security/reference/servlet/architecture.html)
