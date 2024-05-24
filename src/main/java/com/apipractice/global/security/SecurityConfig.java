@@ -1,9 +1,5 @@
 package com.apipractice.global.security;
 
-import static com.apipractice.global.security.type.RoleType.*;
-import static org.springframework.http.HttpMethod.GET;
-import static org.springframework.security.web.util.matcher.AntPathRequestMatcher.antMatcher;
-
 import com.apipractice.global.security.filter.CustomAuthenticationFilter;
 import com.apipractice.global.security.filter.CustomAuthorizationFilter;
 import com.apipractice.global.security.filter.LoginMethodTypeCheckFilter;
@@ -16,6 +12,7 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationProvider;
 import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
+import org.springframework.security.config.annotation.method.configuration.EnableGlobalMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
@@ -34,6 +31,7 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 @Slf4j
 @RequiredArgsConstructor
 @EnableWebSecurity
+@EnableGlobalMethodSecurity(prePostEnabled = true)
 @Configuration
 public class SecurityConfig {
 
@@ -75,10 +73,10 @@ public class SecurityConfig {
    * - Resource 접근 제어
    */
   private Customizer<AuthorizeHttpRequestsConfigurer<HttpSecurity>.AuthorizationManagerRequestMatcherRegistry> checkResourceAuth() {
-    return authorize -> authorize
-        .requestMatchers(antMatcher(GET,"/api/v1/members/guest/**")).hasRole(GUEST.name())
-        .requestMatchers(antMatcher(GET,"/api/v1/members/user/**")).hasRole(USER.name())
-        .requestMatchers(antMatcher(GET,"/api/v1/members/admin/**")).hasRole(ADMIN.name())
+    return (authorize) -> authorize
+//        .requestMatchers(antMatcher(GET,"/api/v1/members/**")).hasAnyRole(GUEST.name(), USER.name())
+//        .requestMatchers(antMatcher(GET,"/api/v1/members/user/**")).hasRole(USER.name())
+//        .requestMatchers(antMatcher(GET,"/api/v1/members/admin/**")).hasRole(ADMIN.name())
         .anyRequest()
         .authenticated();
   }
