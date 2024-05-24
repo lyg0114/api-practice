@@ -2,6 +2,7 @@ package com.apipractice;
 
 import static com.apipractice.domain.common.Address.createAddress;
 import static com.apipractice.global.security.type.RoleType.ADMIN;
+import static com.apipractice.global.security.type.RoleType.GUEST;
 import static com.apipractice.global.security.type.RoleType.USER;
 
 import com.apipractice.domain.member.application.repository.MemberRepository;
@@ -52,13 +53,13 @@ public class ApplicationConfig {
 
       Role saveAdminRole = roleRepository.save(Role.builder().roleName(ADMIN.getKey()).comment(ADMIN.getTitle()).build());
       Role saveUserRole = roleRepository.save(Role.builder().roleName(USER.getKey()).comment(USER.getTitle()).build());
+      Role saveGuestRole = roleRepository.save(Role.builder().roleName(GUEST.getKey()).comment(GUEST.getTitle()).build());
 
       memberRoleRepository.saveAll(List.of(
-          memberRoleRepository.save(
-              MemberRole.builder().member(savedAdminMember).role(saveAdminRole).build()),
-          memberRoleRepository.save(MemberRole.builder().member(savedUserMember).role(saveUserRole).build())
+          memberRoleRepository.save(MemberRole.builder().member(savedAdminMember).role(saveAdminRole).build()),
+          memberRoleRepository.save(MemberRole.builder().member(savedUserMember).role(saveUserRole).build()),
+          memberRoleRepository.save(MemberRole.builder().member(savedUserMember).role(saveGuestRole).build())
       ));
-
     };
   }
 }

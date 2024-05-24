@@ -1,6 +1,7 @@
 package com.apipractice.global.security.filter;
 
 import static com.apipractice.global.security.filter.CustomAuthenticationFilter.LOGIN_PATH;
+import static com.apipractice.global.security.service.JwtService.CLAIM_ROLE;
 import static com.apipractice.global.security.service.JwtService.TOKEN_HEADER_PREFIX;
 import static org.springframework.http.HttpHeaders.AUTHORIZATION;
 import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
@@ -16,7 +17,7 @@ import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import java.io.IOException;
-import java.util.Collections;
+import java.util.ArrayList;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -56,16 +57,16 @@ public class CustomAuthorizationFilter extends OncePerRequestFilter {
     if (!hasToken(authorizationHeader)) {
       errorCode = CustomErrorCode.TOKEN_NOT_EXIST;
     } else {
+
       try {
         String accessToken = authorizationHeader.substring(TOKEN_HEADER_PREFIX.length());
         DecodedJWT decodedJWT = jwtService.verifyToken(accessToken);
 
-        String role = decodedJWT.getClaim("role").asString();
-        List<SimpleGrantedAuthority> authorities = Collections.singletonList(new SimpleGrantedAuthority(role));
         String email = decodedJWT.getSubject();
+        String roles = decodedJWT.getClaim(CLAIM_ROLE).asString();
 
         // SecurityContextHolder에 accessToken 포함하여 저장
-        Authentication authentication = new UsernamePasswordAuthenticationToken(email, accessToken, authorities);
+        Authentication authentication = new UsernamePasswordAuthenticationToken(email, accessToken, getAuthorities(roles));
         SecurityContextHolder.getContext().setAuthentication(authentication);
 
         filterChain.doFilter(request, response);
@@ -77,6 +78,7 @@ public class CustomAuthorizationFilter extends OncePerRequestFilter {
         // 유효하지 않은 Access Token
         errorCode = CustomErrorCode.INVALID_TOKEN;
       }
+
     }
 
     if (errorCode != null) {
@@ -86,6 +88,15 @@ public class CustomAuthorizationFilter extends OncePerRequestFilter {
       ErrorResponse errorResponse = new ErrorResponse(errorCode);
       objectMapper.writeValue(response.getWriter(), errorResponse);
     }
+  }
+
+  private List<SimpleGrantedAuthority> getAuthorities(String roleStr) {
+    String[] roles = roleStr.split(",");
+    List<SimpleGrantedAuthority> authorities = new ArrayList<>();
+    for (String role : roles) {
+      authorities.add(new SimpleGrantedAuthority(role));
+    }
+    return authorities;
   }
 
   private boolean hasToken(String authorizationHeader) {

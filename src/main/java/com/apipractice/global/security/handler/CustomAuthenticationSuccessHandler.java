@@ -11,10 +11,12 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import java.io.IOException;
+import java.util.Collection;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.web.authentication.AuthenticationSuccessHandler;
 import org.springframework.stereotype.Component;
@@ -43,7 +45,7 @@ public class CustomAuthenticationSuccessHandler implements AuthenticationSuccess
 
     // accessToken , refreshToken 생성
     Member member = getMember(userDetails);
-    String accessToken = jwtService.createAccessToken(member.getEmail(), USER, member.getId());
+    String accessToken = jwtService.createAccessToken(member.getEmail(), userDetails.getAuthoritiesStr(), member.getId());
     String refreshToken = jwtService.createRefreshToken(member.getEmail());
     member.updateRefreshToken(refreshToken);
 

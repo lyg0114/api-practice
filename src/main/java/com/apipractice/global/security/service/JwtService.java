@@ -11,6 +11,7 @@ import com.auth0.jwt.JWTVerifier;
 import com.auth0.jwt.interfaces.DecodedJWT;
 import jakarta.servlet.http.HttpServletRequest;
 import java.util.Date;
+import java.util.List;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
@@ -35,7 +36,7 @@ public class JwtService {
     public static final long TOKEN_REFRESH_DAYS = 30;
 
     // Secret
-    public static final String JWT_SECRET = "secret_jwt_hun_sta_gram_secret_key";
+    public static final String JWT_SECRET = "secret_jwt_secret_key";
 
     // Header
     public static final String AT_HEADER = "accessToken";
@@ -78,11 +79,11 @@ public class JwtService {
         return verifier.verify(token);
     }
 
-    public String createAccessToken(String email, RoleType roleType, Long id) {
+    public String createAccessToken(String email, String roleTypes , Long id) {
         return JWT.create()
                 .withSubject(email)
                 .withExpiresAt(new Date(System.currentTimeMillis() + AT_EXP_TIME))
-                .withClaim(CLAIM_ROLE, roleType.getKey())
+                .withClaim(CLAIM_ROLE, roleTypes)
                 .withClaim(CLAIM_ID, id)
                 .sign(HMAC256(JWT_SECRET));
     }

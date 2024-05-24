@@ -23,6 +23,7 @@ public enum CustomErrorCode {
   NICKNAME_ALREADY_EXIST(BAD_REQUEST, "이미 존재하는 닉네임입니다."),
   LOGIN_FAILED(UNAUTHORIZED, "아이디 또는 비밀번호가 일치하지 않습니다."),
   USER_NOT_FOUND(NOT_FOUND, "사용자를 찾을 수 없습니다."),
+  USER_NOT_HAVE_ROLE(NOT_FOUND, "권한을 찾을 수 없습니다."),
 
   // General
   INVALID_HTTP_METHOD(METHOD_NOT_ALLOWED, "잘못된 Http Method 요청입니다."),
