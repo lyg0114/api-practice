@@ -25,32 +25,38 @@ public class ItemDto {
     private BigDecimal price;
     private int stockQuantity;
 
-    //Album
-    private String artist;
-    private String etc;
-
+    private AlbumItemRequest album;
+    private BookItemRequest book;
+    private MovieItemRequest movie;
   }
 
-//  @Getter
-//  @Builder
-//  public static class AlbumItemRequest extends ItemRequest {
-//    private String artist;
-//    private String etc;
-//  }
-//
-//  @Getter
-//  @Builder
-//  public static class BookItemRequest extends ItemRequest {
-//    private String author;
-//    private String isbn;
-//
-//  }
-//
-//  @Getter
-//  @Builder
-//  public static class MovieItemRequest extends ItemRequest {
-//    private String director;
-//    private String actor;
-//  }
+  @ToString
+  @Getter
+  @Builder
+  @AllArgsConstructor(access = PRIVATE)
+  public static class AlbumItemRequest {
 
+    private String artist;
+    private String etc;
+  }
+
+  @ToString
+  @Getter
+  @Builder
+  @AllArgsConstructor(access = PRIVATE)
+  public static class BookItemRequest {
+
+    private String author;
+    private String isbn;
+  }
+
+  @ToString
+  @Getter
+  @Builder
+  @AllArgsConstructor(access = PRIVATE)
+  public static class MovieItemRequest {
+
+    private String director;
+    private String actor;
+  }
 }
