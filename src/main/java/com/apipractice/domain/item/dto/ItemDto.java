@@ -35,6 +35,29 @@ public class ItemDto {
   @Getter
   @Builder
   @AllArgsConstructor(access = PRIVATE)
+  public static class ItemCondition {
+
+    private String name;
+    private BigDecimal price;
+    private Integer stockQuantity;
+
+    // Album
+    private String artist;
+
+    // Book
+    private String author;
+    private String isbn;
+
+    // Movie
+    private String director;
+    private String actor;
+  }
+
+
+  @ToString
+  @Getter
+  @Builder
+  @AllArgsConstructor(access = PRIVATE)
   public static class ItemRequest {
 
     @NotBlank(message = "물품명을 입력 해주세요.")
@@ -117,6 +140,52 @@ public class ItemDto {
   @Builder
   @AllArgsConstructor(access = PRIVATE)
   public static class MovieItemRequest {
+
+    private String director;
+    private String actor;
+  }
+
+
+  @ToString
+  @Getter
+  @Builder
+  @AllArgsConstructor(access = PRIVATE)
+  public static class ItemResponse {
+
+    private String name;
+    private BigDecimal price;
+    private int stockQuantity;
+    private String itemType;
+    private AlbumItemResponse album;
+    private BookItemResponse book;
+    private MovieItemResponse movie;
+  }
+
+  @ToString
+  @Getter
+  @Builder
+  @AllArgsConstructor(access = PRIVATE)
+  public static class AlbumItemResponse {
+
+    private String artist;
+    private String etc;
+  }
+
+  @ToString
+  @Getter
+  @Builder
+  @AllArgsConstructor(access = PRIVATE)
+  public static class BookItemResponse {
+
+    private String author;
+    private String isbn;
+  }
+
+  @ToString
+  @Getter
+  @Builder
+  @AllArgsConstructor(access = PRIVATE)
+  public static class MovieItemResponse {
 
     private String director;
     private String actor;

@@ -42,5 +42,5 @@ public class Role extends BaseTimeEntity {
   private String comment;
 
   @OneToMany(mappedBy = "role")
-  List<MemberRole> memberRoles = new ArrayList<>();
+  private List<MemberRole> memberRoles = new ArrayList<>();
 }
