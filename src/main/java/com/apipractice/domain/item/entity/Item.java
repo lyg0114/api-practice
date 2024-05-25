@@ -1,22 +1,24 @@
 package com.apipractice.domain.item.entity;
 
+import static jakarta.persistence.FetchType.LAZY;
 import static jakarta.persistence.GenerationType.IDENTITY;
 import static lombok.AccessLevel.PROTECTED;
 
 import com.apipractice.domain.common.BaseTimeEntity;
+import com.apipractice.domain.item.entity.detail.Album;
+import com.apipractice.domain.item.entity.detail.Book;
+import com.apipractice.domain.item.entity.detail.Movie;
 import jakarta.persistence.Column;
-import jakarta.persistence.DiscriminatorColumn;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.Id;
-import jakarta.persistence.Inheritance;
-import jakarta.persistence.InheritanceType;
+import jakarta.persistence.JoinColumn;
 import jakarta.persistence.OneToMany;
+import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
 import java.math.BigDecimal;
 import java.util.List;
 import lombok.AllArgsConstructor;
-import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
@@ -26,13 +28,11 @@ import lombok.NoArgsConstructor;
  * @since : 18.05.24
  */
 @Getter
-@Inheritance(strategy = InheritanceType.SINGLE_TABLE) // 하나의 테이블로 통합
-@DiscriminatorColumn(name = "dtype")
 @AllArgsConstructor
 @NoArgsConstructor(access = PROTECTED)
 @Table(name = "item")
 @Entity
-public abstract class Item extends BaseTimeEntity {
+public class Item extends BaseTimeEntity {
 
   @Id
   @GeneratedValue(strategy = IDENTITY)
@@ -50,4 +50,16 @@ public abstract class Item extends BaseTimeEntity {
 
   @OneToMany(mappedBy = "item")
   private List<ItemCategory> itemCategorys;
+
+  @OneToOne(fetch = LAZY)
+  @JoinColumn(name = "album_id")
+  private Album album;
+
+  @OneToOne(fetch = LAZY)
+  @JoinColumn(name = "movie_id")
+  private Movie movie;
+
+  @OneToOne(fetch = LAZY)
+  @JoinColumn(name = "book_id")
+  private Book book;
 }
