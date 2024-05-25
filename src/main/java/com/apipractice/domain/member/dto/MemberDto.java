@@ -22,7 +22,7 @@ public class MemberDto {
 
   @Getter
   @Builder
-  @AllArgsConstructor
+  @AllArgsConstructor(access = PRIVATE)
   public static class SignUpRequest {
 
     @NotBlank(message = "이메일을 입력해주세요.")
