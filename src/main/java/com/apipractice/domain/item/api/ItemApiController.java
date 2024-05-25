@@ -1,5 +1,6 @@
 package com.apipractice.domain.item.api;
 
+import com.apipractice.domain.item.application.service.ItemService;
 import com.apipractice.domain.item.dto.ItemDto;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -21,11 +22,12 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 public class ItemApiController {
 
+  private final ItemService itemService;
+
   @PostMapping
-  public ResponseEntity<Void> addItem(
-      @RequestBody @Valid ItemDto.ItemRequest itemRequest
-  ) {
+  public ResponseEntity<Void> addItem(@RequestBody @Valid ItemDto.ItemRequest itemRequest) {
     log.info("ItemDto.ItemRequest : {}", itemRequest);
+    itemService.addItem(itemRequest);
 
     return ResponseEntity.ok().build();
   }
