@@ -28,9 +28,9 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
  */
 public class CustomAuthenticationFilter extends UsernamePasswordAuthenticationFilter {
 
-  public static final String LOGIN_PATH = "/api/v1/members/login";
+  public static final String LOGIN_PATH = "/api/members/v1/login";
   private final AuthenticationManager authenticationManager;
-  private ObjectMapper objectMapper;
+  private final ObjectMapper objectMapper;
 
   public CustomAuthenticationFilter(
       AuthenticationManagerBuilder authManagerBuilder,
