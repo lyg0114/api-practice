@@ -1,22 +1,19 @@
 package com.apipractice.global.security.handler;
 
-import static com.apipractice.global.security.type.RoleType.USER;
 import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 
-import com.apipractice.domain.member.entity.Member;
 import com.apipractice.domain.member.application.repository.MemberRepository;
+import com.apipractice.domain.member.entity.Member;
 import com.apipractice.global.security.service.CustomUserDetails;
 import com.apipractice.global.security.service.JwtService;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import java.io.IOException;
-import java.util.Collection;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.Authentication;
-import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.web.authentication.AuthenticationSuccessHandler;
 import org.springframework.stereotype.Component;

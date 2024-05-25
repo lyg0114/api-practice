@@ -3,6 +3,7 @@ package com.apipractice.global.security.filter;
 import static com.apipractice.global.exception.CustomErrorCode.INVALID_VALUE;
 
 import com.apipractice.domain.member.dto.MemberDto.LoginRequest;
+import com.apipractice.global.aop.annotation.Trace;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
