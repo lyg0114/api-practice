@@ -21,5 +21,7 @@ public class ItemService {
 
   @Transactional
   public void addItem(ItemRequest itemRequest) {
+    itemRepositroy.save(itemRequest.toEntity());
   }
+
 }

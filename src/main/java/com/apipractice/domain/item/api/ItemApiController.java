@@ -28,7 +28,6 @@ public class ItemApiController {
   public ResponseEntity<Void> addItem(@RequestBody @Valid ItemDto.ItemRequest itemRequest) {
     log.info("ItemDto.ItemRequest : {}", itemRequest);
     itemService.addItem(itemRequest);
-
     return ResponseEntity.ok().build();
   }
 }

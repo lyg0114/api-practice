@@ -19,8 +19,8 @@ import lombok.NoArgsConstructor;
  * @package : com.example.jpashopyglee.domain
  * @since : 12.05.24
  */
-@Getter
 @Builder
+@Getter
 @AllArgsConstructor
 @NoArgsConstructor(access = PROTECTED)
 @Table(name = "movie")
