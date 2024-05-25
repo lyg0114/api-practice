@@ -54,7 +54,7 @@ public class Order extends BaseTimeEntity {
   @JoinColumn(name = "member_id")
   private Member member;
 
-  @OneToMany
+  @OneToMany(mappedBy = "order")
   private List<OrderItem> orderItems;
 
   @OneToOne

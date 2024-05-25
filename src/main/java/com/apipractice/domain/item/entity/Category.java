@@ -1,5 +1,6 @@
 package com.apipractice.domain.item.entity;
 
+import static jakarta.persistence.FetchType.LAZY;
 import static jakarta.persistence.GenerationType.IDENTITY;
 import static lombok.AccessLevel.PROTECTED;
 
@@ -42,7 +43,7 @@ public class Category extends BaseTimeEntity {
   private String name;
 
   // 셀프로 양방향 연관관계를 맺어서 계층구조를 구현
-  @ManyToOne(fetch = FetchType.LAZY)
+  @ManyToOne(fetch = LAZY)
   @JoinColumn(name = "parent_id")
   private Category parent;
 
