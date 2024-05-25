@@ -26,10 +26,9 @@ public class CustomUserDetails implements UserDetails {
   private final List<SimpleGrantedAuthority> grantedAuthorities = new ArrayList<>();
   private final String roleStrs;
 
-  public CustomUserDetails(Member member) {
+  public CustomUserDetails(Member member, List<Role> roles) {
 
     this.member = member;
-    List<Role> roles = member.getRoles();
 
     if (isNull(roles) || roles.isEmpty()) {
       throw new CustomException(USER_NOT_HAVE_ROLE);

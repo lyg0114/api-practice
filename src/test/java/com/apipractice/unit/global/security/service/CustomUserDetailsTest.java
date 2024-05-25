@@ -25,15 +25,14 @@ class CustomUserDetailsTest {
   @Test
   void create_custom_user_details_Test() {
     //given
-    Member member = Member.builder()
-        .roles(List.of(
-            Role.builder().roleName(USER.getKey()).build(),
-            Role.builder().roleName(ADMIN.getKey()).build()
-        ))
-        .build();
+    Member member = Member.builder().build();
+    List<Role> roles = List.of(
+        Role.builder().roleName(USER.getKey()).build(),
+        Role.builder().roleName(ADMIN.getKey()).build()
+    );
 
     //when
-    CustomUserDetails customUserDetails = new CustomUserDetails(member);
+    CustomUserDetails customUserDetails = new CustomUserDetails(member, roles);
     String authoritiesStr = customUserDetails.getAuthoritiesStr();
 
     //then
@@ -44,11 +43,11 @@ class CustomUserDetailsTest {
   @Test
   void create_custom_user_details_if_role_no_exist_Test() {
     //given, when
-    Member member = Member.builder().roles(new ArrayList<>()).build();
+    Member member = Member.builder().build();
 
     //then
     assertThatThrownBy(() -> {
-      new CustomUserDetails(member);
+      new CustomUserDetails(member, new ArrayList<>());
     }).isInstanceOf(CustomException.class);
   }
 }

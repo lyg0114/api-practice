@@ -29,8 +29,7 @@ public class CustomUserDetailsService implements UserDetailsService {
         .orElseThrow(() -> new UsernameNotFoundException("가입된 이메일이 존재하지 않습니다."));
 
     List<Role> roles = roleRepository.findRolesByMemberId(member.getId());
-    member.updateRoles(roles);
 
-    return new CustomUserDetails(member);
+    return new CustomUserDetails(member, roles);
   }
 }

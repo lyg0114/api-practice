@@ -37,8 +37,7 @@ public class CustomAuthenticationSuccessHandler implements AuthenticationSuccess
 
   @Transactional
   @Override
-  public void onAuthenticationSuccess(HttpServletRequest request, HttpServletResponse response,
-      Authentication authentication)
+  public void onAuthenticationSuccess(HttpServletRequest request, HttpServletResponse response, Authentication authentication)
       throws IOException {
 
     CustomUserDetails userDetails = (CustomUserDetails) authentication.getPrincipal();

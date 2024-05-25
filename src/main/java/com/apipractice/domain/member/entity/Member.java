@@ -13,7 +13,6 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.Id;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
-import jakarta.persistence.Transient;
 import java.util.List;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -62,15 +61,8 @@ public class Member extends BaseTimeEntity {
   @OneToMany(mappedBy = "member")
   private List<MemberRole> memberRoles;
 
-  @Transient
-  private List<Role> roles;
-
   public void updateRefreshToken(String refreshToken) {
     this.refreshToken = refreshToken;
-  }
-
-  public void updateRoles(List<Role> roles) {
-    this.roles = roles;
   }
 
   public void deleteRefreshToken() {
