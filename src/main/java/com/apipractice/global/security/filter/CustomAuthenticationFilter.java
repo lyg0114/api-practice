@@ -1,6 +1,7 @@
 package com.apipractice.global.security.filter;
 
 import static com.apipractice.global.exception.CustomErrorCode.INVALID_VALUE;
+import static org.springframework.http.HttpMethod.GET;
 
 import com.apipractice.domain.member.dto.MemberDto.LoginRequest;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -8,6 +9,7 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.util.stream.Collectors;
+import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.AuthenticationServiceException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -55,9 +57,18 @@ public class CustomAuthenticationFilter extends UsernamePasswordAuthenticationFi
   @Override
   public Authentication attemptAuthentication(HttpServletRequest request, HttpServletResponse response)
       throws AuthenticationException {
+
+    if (isGetMethod(request)) {
+      throw new AuthenticationServiceException("can't use get method");
+    }
+
     LoginRequest loginRequest = createLoginRequest(request);
     Authentication authentication = new UsernamePasswordAuthenticationToken(loginRequest.getEmail(), loginRequest.getPassword());
     return authenticationManager.authenticate(authentication);
+  }
+
+  private boolean isGetMethod(HttpServletRequest request) {
+    return request.getMethod().equals(GET.name());
   }
 
   /**
