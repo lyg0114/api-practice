@@ -1,5 +1,6 @@
 package com.apipractice.global.security.filter;
 
+import static com.apipractice.global.exception.CustomErrorCode.INVALID_HTTP_METHOD;
 import static com.apipractice.global.exception.CustomErrorCode.INVALID_VALUE;
 import static org.springframework.http.HttpMethod.GET;
 
@@ -9,7 +10,7 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.util.stream.Collectors;
-import org.springframework.security.access.AccessDeniedException;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.AuthenticationServiceException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -27,6 +28,7 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
  *
  *  - id, pw 를 이용한 사용자 체크 필터
  */
+@Slf4j
 public class CustomAuthenticationFilter extends UsernamePasswordAuthenticationFilter {
 
   public static final String LOGIN_PATH = "/api/members/v1/login";
@@ -59,6 +61,8 @@ public class CustomAuthenticationFilter extends UsernamePasswordAuthenticationFi
       throws AuthenticationException {
 
     if (isGetMethod(request)) {
+      log.error("url: {} | errorCode: {} | errorMessage: {} ",
+          request.getRequestURL(), INVALID_HTTP_METHOD, INVALID_HTTP_METHOD.getErrorMessage());
       throw new AuthenticationServiceException("can't use get method");
     }
 
