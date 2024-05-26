@@ -34,14 +34,15 @@ public class CustomAuthenticationFilter extends UsernamePasswordAuthenticationFi
   public CustomAuthenticationFilter(
       AuthenticationManagerBuilder authManagerBuilder,
       AuthenticationSuccessHandler successHandler,
-      AuthenticationFailureHandler failureHandler
+      AuthenticationFailureHandler failureHandler,
+      ObjectMapper objectMapper
   ) {
     this.setPostOnly(true);
     this.setFilterProcessesUrl(LOGIN_PATH);
     this.authenticationManager = authManagerBuilder.getOrBuild();
     this.setAuthenticationSuccessHandler(successHandler);
     this.setAuthenticationFailureHandler(failureHandler);
-    this.objectMapper = new ObjectMapper();
+    this.objectMapper = objectMapper;
   }
 
   /**
