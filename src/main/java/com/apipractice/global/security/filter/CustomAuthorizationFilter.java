@@ -41,14 +41,24 @@ public class CustomAuthorizationFilter extends OncePerRequestFilter {
   private final JwtService jwtService;
   private final ObjectMapper objectMapper;
 
+  /**
+   * @param request current HTTP request
+   * @return
+   *  - 인증이 필요없는 URL 설정
+   */
+  @Override
+  protected boolean shouldNotFilter(HttpServletRequest request) {
+    return isNoNeedAuthenticationURL(request);
+  }
+
+  private boolean isNoNeedAuthenticationURL(HttpServletRequest request) {
+    return request.getServletPath().equals(LOGIN_PATH);
+  }
+
   @Override
   protected void doFilterInternal(
       HttpServletRequest request, HttpServletResponse response, FilterChain filterChain
   ) throws ServletException, IOException {
-
-    if (isNoNeedAuthenticationURL(request)) {
-      filterChain.doFilter(request, response);
-    }
 
     String authorizationHeader = request.getHeader(AUTHORIZATION);
     CustomErrorCode errorCode = null;
@@ -57,7 +67,6 @@ public class CustomAuthorizationFilter extends OncePerRequestFilter {
     if (!hasToken(authorizationHeader)) {
       errorCode = CustomErrorCode.TOKEN_NOT_EXIST;
     } else {
-
       try {
         String accessToken = authorizationHeader.substring(TOKEN_HEADER_PREFIX.length());
         DecodedJWT decodedJWT = jwtService.verifyToken(accessToken);
@@ -101,9 +110,5 @@ public class CustomAuthorizationFilter extends OncePerRequestFilter {
 
   private boolean hasToken(String authorizationHeader) {
     return authorizationHeader != null && authorizationHeader.startsWith(TOKEN_HEADER_PREFIX);
-  }
-
-  private boolean isNoNeedAuthenticationURL(HttpServletRequest request) {
-    return request.getServletPath().equals(LOGIN_PATH);
   }
 }
