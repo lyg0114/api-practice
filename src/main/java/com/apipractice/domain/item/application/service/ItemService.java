@@ -25,13 +25,27 @@ public class ItemService {
   private final ItemRepositroy itemRepositroy;
   private final CustomItemRepository customItemRepository;
 
-  public void addItem(ItemRequest itemRequest) {
-    itemRepositroy.save(itemRequest.toEntity());
-  }
 
   @Transactional(readOnly = true)
   public Page<ItemResponse> searchItems(ItemCondition condition) {
     Page<ItemResponse> responses= customItemRepository.searchItems(condition);
     return null;
   }
+
+  @Transactional(readOnly = true)
+  public ItemResponse findItem(long itemId) {
+    return null;
+  }
+
+  public void addItem(ItemRequest itemRequest) {
+    itemRepositroy.save(itemRequest.toEntity());
+  }
+
+  public void updateItem(ItemRequest itemRequest, Long itemId) {
+  }
+
+
+  public void deleteItem(Long itemId) {
+  }
+
 }
