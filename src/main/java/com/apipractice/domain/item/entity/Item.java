@@ -19,11 +19,13 @@ import com.apipractice.domain.item.dto.ItemDto.MovieItemResponse.MovieItemRespon
 import com.apipractice.domain.item.entity.detail.Album;
 import com.apipractice.domain.item.entity.detail.Book;
 import com.apipractice.domain.item.entity.detail.Movie;
+import com.apipractice.domain.member.entity.Member;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
@@ -67,6 +69,10 @@ public class Item extends BaseTimeEntity {
   @Column(name = "item_type")
   private String itemType;
 
+  @ManyToOne
+  @JoinColumn(name = "member_id")
+  private Member seller;
+
   @OneToOne(fetch = LAZY, cascade = ALL) // 영속선 전이 ALL 설정
   @JoinColumn(name = "album_id")
   private Album album;
@@ -86,6 +92,8 @@ public class Item extends BaseTimeEntity {
     builder.price(this.price);
     builder.stockQuantity(this.stockQuantity);
     builder.itemType(this.itemType);
+    builder.sellerEamil(this.seller.getEmail());
+    builder.sellerName(this.seller.getName());
 
     if (itemType.equals(ALBUM.getKey())) {
       AlbumItemResponseBuilder albumBuilder
@@ -116,4 +124,10 @@ public class Item extends BaseTimeEntity {
 
     return builder.build();
   }
+
+
+  public void updateAlbum(Album album) {
+    this.album = album;
+  }
+
 }

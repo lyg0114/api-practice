@@ -7,15 +7,12 @@ import com.apipractice.domain.item.application.repository.ItemRepositroy;
 import com.apipractice.domain.item.dto.ItemDto.ItemCondition;
 import com.apipractice.domain.item.dto.ItemDto.ItemRequest;
 import com.apipractice.domain.item.dto.ItemDto.ItemResponse;
-import com.apipractice.domain.item.entity.Item;
 import com.apipractice.global.exception.CustomException;
-import java.util.Optional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.web.servlet.resource.NoResourceFoundException;
 
 /**
  * @author : iyeong-gyo
@@ -30,7 +27,6 @@ public class ItemService {
 
   private final ItemRepositroy itemRepositroy;
   private final CustomItemRepository customItemRepository;
-
 
   @Transactional(readOnly = true)
   public Page<ItemResponse> searchItems(ItemCondition condition) {

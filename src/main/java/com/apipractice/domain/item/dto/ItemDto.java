@@ -156,6 +156,8 @@ public class ItemDto {
     private BigDecimal price;
     private int stockQuantity;
     private String itemType;
+    private String sellerEamil;
+    private String sellerName;
     private AlbumItemResponse album;
     private BookItemResponse book;
     private MovieItemResponse movie;
