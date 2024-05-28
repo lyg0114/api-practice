@@ -13,6 +13,7 @@ public enum RoleType {
 
   ADMIN("ROLE_ADMIN", "관리자"),
   USER("ROLE_USER", "일반 사용자"),
+  SELLER("ROLE_SELLER", "판매자 "),
   GUEST("ROLE_GUEST", "손님");
 
   private final String key;

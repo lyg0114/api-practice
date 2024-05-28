@@ -1,15 +1,21 @@
 package com.apipractice.domain.item.application.service;
 
+import static com.apipractice.global.exception.CustomErrorCode.ITEM_NOT_EXIST;
+
 import com.apipractice.domain.item.application.repository.CustomItemRepository;
 import com.apipractice.domain.item.application.repository.ItemRepositroy;
 import com.apipractice.domain.item.dto.ItemDto.ItemCondition;
 import com.apipractice.domain.item.dto.ItemDto.ItemRequest;
 import com.apipractice.domain.item.dto.ItemDto.ItemResponse;
+import com.apipractice.domain.item.entity.Item;
+import com.apipractice.global.exception.CustomException;
+import java.util.Optional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.servlet.resource.NoResourceFoundException;
 
 /**
  * @author : iyeong-gyo
@@ -34,7 +40,9 @@ public class ItemService {
 
   @Transactional(readOnly = true)
   public ItemResponse findItem(long itemId) {
-    return null;
+    return itemRepositroy.findById(itemId)
+        .orElseThrow(() -> new CustomException(ITEM_NOT_EXIST))
+        .toDto();
   }
 
   public void addItem(ItemRequest itemRequest) {

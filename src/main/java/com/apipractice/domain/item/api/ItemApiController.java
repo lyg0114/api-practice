@@ -3,12 +3,14 @@ package com.apipractice.domain.item.api;
 import com.apipractice.domain.item.application.service.ItemService;
 import com.apipractice.domain.item.dto.ItemDto;
 import com.apipractice.domain.item.dto.ItemDto.ItemResponse;
+import jakarta.persistence.PrePersist;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
@@ -47,6 +49,7 @@ public class ItemApiController {
         .body(itemService.findItem(itemId));
   }
 
+  @PreAuthorize("hasAnyRole('ADMIN','SELLER')")
   @PostMapping
   public ResponseEntity<Void> addItem(@RequestBody @Valid ItemDto.ItemRequest itemRequest) {
 
@@ -54,6 +57,7 @@ public class ItemApiController {
     return ResponseEntity.ok().build();
   }
 
+  @PreAuthorize("hasAnyRole('ADMIN','SELLER')")
   @PatchMapping("/{itemId}")
   public ResponseEntity<ItemResponse> updateItem(
       @PathVariable Long itemId,
@@ -67,6 +71,7 @@ public class ItemApiController {
         .body(item);
   }
 
+  @PreAuthorize("hasAnyRole('ADMIN','SELLER')")
   @DeleteMapping("/{itemId}")
   public ResponseEntity<Void> deleteItem(@PathVariable Long itemId) {
 
