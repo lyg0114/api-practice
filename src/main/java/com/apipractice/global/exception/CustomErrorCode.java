@@ -42,6 +42,7 @@ public enum CustomErrorCode {
   ITEM_NOT_EXIST(BAD_REQUEST, "존재하지 않는 상품 입니다."),
   ITEMTYPE_CANNOT_CHANGE(BAD_REQUEST, "상품 종류는 변경할 수 없습니다."),
   ITEM_TYPE_NOT_EXIST(BAD_REQUEST, "존재하지 않는 상품 목록 입니다."),
+  ITEM_SELLER_NOT_MATCH(BAD_REQUEST, "판매자 정보가 일치하지 않습니다."),
   ITEM_NAME_ALREADY_EXIST(BAD_REQUEST, "이미 등록된 상품명 입니다.");
 
 

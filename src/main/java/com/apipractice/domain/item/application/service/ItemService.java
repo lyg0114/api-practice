@@ -60,9 +60,10 @@ public class ItemService {
   }
 
   public void updateItem(ItemRequest itemRequest, Long itemId) {
+    String email = jwtService.getEmail();
     itemRepositroy.findById(itemId)
         .orElseThrow(() -> new CustomException(ITEM_NOT_EXIST))
-        .updateItem(itemRequest);
+        .updateItem(itemRequest, email);
   }
 
   public void deleteItem(Long itemId) {

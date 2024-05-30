@@ -4,6 +4,7 @@ import static com.apipractice.domain.item.dto.ItemType.ALBUM;
 import static com.apipractice.domain.item.dto.ItemType.BOOK;
 import static com.apipractice.domain.item.dto.ItemType.MOVIE;
 import static com.apipractice.global.exception.CustomErrorCode.ITEMTYPE_CANNOT_CHANGE;
+import static com.apipractice.global.exception.CustomErrorCode.ITEM_SELLER_NOT_MATCH;
 import static jakarta.persistence.CascadeType.ALL;
 import static jakarta.persistence.FetchType.LAZY;
 import static jakarta.persistence.GenerationType.IDENTITY;
@@ -88,7 +89,11 @@ public class Item extends BaseTimeEntity {
   @JoinColumn(name = "book_id")
   private Book book;
 
-  public void updateItem(ItemRequest itemRequest) {
+  public void updateItem(ItemRequest itemRequest, String email) {
+    if (!this.seller.getEmail().equals(email)) {
+      throw new CustomException(ITEM_SELLER_NOT_MATCH);
+    }
+
     if (!itemRequest.getItemType().equals(this.itemType)) {
       throw new CustomException(ITEMTYPE_CANNOT_CHANGE);
     }

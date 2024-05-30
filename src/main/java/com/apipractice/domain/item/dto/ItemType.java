@@ -1,6 +1,5 @@
 package com.apipractice.domain.item.dto;
 
-import com.apipractice.global.security.type.RoleType;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 

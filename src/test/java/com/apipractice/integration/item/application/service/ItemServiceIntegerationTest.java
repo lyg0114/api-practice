@@ -17,7 +17,6 @@ import com.apipractice.domain.item.entity.detail.Album;
 import com.apipractice.domain.member.application.repository.MemberRepository;
 import com.apipractice.domain.member.entity.Member;
 import com.apipractice.global.security.service.JwtService;
-import jakarta.persistence.EntityManager;
 import java.math.BigDecimal;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -32,6 +31,7 @@ import org.springframework.transaction.annotation.Transactional;
  * @since : 28.05.24
  */
 @ActiveProfiles("test")
+@Transactional // 모든 테스트가 각각의 트랜잭션에서 실행되도록
 @SpringBootTest
 class ItemServiceIntegerationTest {
 
@@ -39,7 +39,6 @@ class ItemServiceIntegerationTest {
   @Autowired private ItemRepositroy itemRepositroy;
   @Autowired private MemberRepository memberRepository;
   @Autowired private CustomItemRepository customItemRepository;
-  @Autowired EntityManager em;
 
   private Member createUser(Long id) {
     return Member.builder()
@@ -69,16 +68,35 @@ class ItemServiceIntegerationTest {
     return builder.build();
   }
 
-  /**
-   * 물품을 등록 후, 검증을 위한 조회 쿼리 실행시 트랜잭션이 종료 되므로 @Transactional 을 추가
-   */
-  @Transactional
+  @DisplayName("물품 단건 조회에 성공한다.")
+  @Test
+  void find_item_test() {
+    //given
+    Member seller = memberRepository.save(createUser(1L));
+    Item album = itemRepositroy.save(createAlbum(1L, seller));
+
+    //when
+    ItemResponse response = itemService.findItem(seller.getId());
+
+    //then
+    assertThat(response.getName()).isEqualTo(album.getName());
+    assertThat(response.getPrice()).isEqualTo(album.getPrice());
+    assertThat(response.getStockQuantity()).isEqualTo(album.getStockQuantity());
+    assertThat(response.getItemType()).isEqualTo(album.getItemType());
+    assertThat(response.getSellerEamil()).isEqualTo(album.getSeller().getEmail());
+    assertThat(response.getSellerName()).isEqualTo(album.getSeller().getName());
+    assertThat(response.getBook()).isNull();
+    assertThat(response.getMovie()).isNull();
+    assertThat(response.getAlbum()).isNotNull();
+    assertThat(response.getAlbum().getArtist()).isEqualTo(album.getAlbum().getArtist());
+    assertThat(response.getAlbum().getEtc()).isEqualTo(album.getAlbum().getEtc());
+  }
+
   @DisplayName("물품 단건 등록에 성공한다.")
   @Test
   void insert_item_test() {
     //given
-    Member seller = createUser(1L);
-    memberRepository.save(seller);
+    Member seller = memberRepository.save(createUser(1L));
 
     //TODO : 추후 Spring Security 테스트로 적용
     JwtService jwtService = mock(JwtService.class);
@@ -120,29 +138,70 @@ class ItemServiceIntegerationTest {
     assertThat(response.getAlbum().getEtc()).isEqualTo(etc);
   }
 
-  @DisplayName("물품 단건 조회에 성공한다.")
+  @DisplayName("물품 단건 수정에 성공한다.")
   @Test
-  void find_item_test() {
+  void update_item_test() {
     //given
-    Member seller = createUser(1L);
-    memberRepository.save(seller);
-    Item album = createAlbum(1L, seller);
-    itemRepositroy.save(album);
+    Member seller = memberRepository.save(createUser(1L));
+
+    //TODO : 추후 Spring Security 테스트로 적용
+    JwtService jwtService = mock(JwtService.class);
+    when(jwtService.getEmail()).thenReturn(seller.getEmail());
+    itemService = new ItemService(itemRepositroy, memberRepository, customItemRepository, jwtService);
+
+    String name = "박효신 1집";
+    BigDecimal price = new BigDecimal("50000");
+    int stockQuantity = 10;
+    String itemType = ALBUM.getKey();
+    String artist = "박효신";
+    String etc = "박효신 1집 한정 앨범";
+
+    Item item = Item.builder()
+        .seller(seller)
+        .name(name)
+        .price(price)
+        .stockQuantity(stockQuantity)
+        .itemType(itemType)
+        .album(Album.builder()
+            .artist(artist)
+            .etc(etc)
+            .build())
+        .build();
+
+    Item saveItem = itemRepositroy.save(item);
 
     //when
-    ItemResponse response = itemService.findItem(1L);
+    String updateName = "박효신 2집";
+    BigDecimal updatePrice = new BigDecimal("100000");
+    int updateStockQuantity = 20;
+    String updateArtist = "##박효신##";
+    String updateEtc = "##박효신 2집 한정 앨범##";
+    ItemRequest updateAlbum = ItemRequest.builder()
+        .name(updateName)
+        .price(updatePrice)
+        .stockQuantity(updateStockQuantity)
+        .itemType(itemType)
+        .album(AlbumItemRequest.builder()
+            .artist(updateArtist)
+            .etc(updateEtc)
+            .build())
+        .build();
+
+    itemService.updateItem(updateAlbum, saveItem.getId());
 
     //then
-    assertThat(response.getName()).isEqualTo(album.getName());
-    assertThat(response.getPrice()).isEqualTo(new BigDecimal(album.getPrice() + ".00"));
-    assertThat(response.getStockQuantity()).isEqualTo(album.getStockQuantity());
-    assertThat(response.getItemType()).isEqualTo(album.getItemType());
-    assertThat(response.getSellerEamil()).isEqualTo(album.getSeller().getEmail());
-    assertThat(response.getSellerName()).isEqualTo(album.getSeller().getName());
+    ItemResponse response = itemService.findItem(saveItem.getId());
+
+    assertThat(response.getName()).isEqualTo(updateName);
+    assertThat(response.getPrice()).isEqualTo(updatePrice);
+    assertThat(response.getStockQuantity()).isEqualTo(updateStockQuantity);
+    assertThat(response.getItemType()).isEqualTo(itemType);
+    assertThat(response.getSellerEamil()).isEqualTo(seller.getEmail());
+    assertThat(response.getSellerName()).isEqualTo(seller.getName());
     assertThat(response.getBook()).isNull();
     assertThat(response.getMovie()).isNull();
     assertThat(response.getAlbum()).isNotNull();
-    assertThat(response.getAlbum().getArtist()).isEqualTo(album.getAlbum().getArtist());
-    assertThat(response.getAlbum().getEtc()).isEqualTo(album.getAlbum().getEtc());
+    assertThat(response.getAlbum().getArtist()).isEqualTo(updateArtist);
+    assertThat(response.getAlbum().getEtc()).isEqualTo(updateEtc);
   }
 }
