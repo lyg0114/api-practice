@@ -3,8 +3,6 @@ package com.apipractice.integration.item.application.service;
 import static com.apipractice.domain.item.dto.ItemType.ALBUM;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
 
 import com.apipractice.domain.item.application.repository.CustomItemRepository;
 import com.apipractice.domain.item.application.repository.ItemRepositroy;
@@ -18,13 +16,20 @@ import com.apipractice.domain.item.entity.detail.Album;
 import com.apipractice.domain.member.application.repository.MemberRepository;
 import com.apipractice.domain.member.entity.Member;
 import com.apipractice.global.security.service.JwtService;
+import com.apipractice.global.security.type.RoleType;
 import jakarta.persistence.EntityManager;
 import java.math.BigDecimal;
+import java.util.Collections;
+import java.util.List;
 import java.util.NoSuchElementException;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -38,9 +43,11 @@ import org.springframework.transaction.annotation.Transactional;
 @SpringBootTest
 class ItemServiceIntegerationTest {
 
+  @Autowired private JwtService jwtService;
   @Autowired private ItemRepositroy itemRepositroy;
   @Autowired private MemberRepository memberRepository;
   @Autowired private CustomItemRepository customItemRepository;
+  @Autowired private ItemService itemService;
   @Autowired private EntityManager em;
 
   private Member createUser(Long id) {
@@ -71,18 +78,23 @@ class ItemServiceIntegerationTest {
     return builder.build();
   }
 
+  private void loginUser(Member user) {
+    String roleStrs = "ROLE_USER,ROLE_SELLER";
+    String accessToken = jwtService.createAccessToken(user.getEmail(), roleStrs, user.getId());
+    List<SimpleGrantedAuthority> authorities = Collections.singletonList(new SimpleGrantedAuthority(RoleType.USER.getKey()));
+    Authentication authToken = new UsernamePasswordAuthenticationToken(user.getEmail(), accessToken, authorities);
+    SecurityContextHolder.getContext().setAuthentication(authToken);
+  }
+
   @DisplayName("물품 단건 조회에 성공한다.")
   @Test
   void find_item_test() {
     //given
     Member seller = memberRepository.save(createUser(1L));
+    loginUser(seller);
     Item album = itemRepositroy.save(createAlbum(1L, seller));
 
     //when
-    JwtService jwtService = mock(JwtService.class);
-    when(jwtService.getEmail()).thenReturn(seller.getEmail());
-    ItemService itemService = new ItemService(itemRepositroy, memberRepository,
-        customItemRepository, jwtService);
     ItemResponse response = itemService.findItem(seller.getId());
 
     //then
@@ -104,12 +116,7 @@ class ItemServiceIntegerationTest {
   void insert_item_test() {
     //given
     Member seller = memberRepository.save(createUser(1L));
-
-    //TODO : 추후 Spring Security 테스트로 적용
-    JwtService jwtService = mock(JwtService.class);
-    when(jwtService.getEmail()).thenReturn(seller.getEmail());
-    ItemService itemService = new ItemService(itemRepositroy, memberRepository,
-        customItemRepository, jwtService);
+    loginUser(seller);
 
     String name = "박효신 1집";
     BigDecimal price = new BigDecimal("50000");
@@ -151,12 +158,7 @@ class ItemServiceIntegerationTest {
   void update_item_test() {
     //given
     Member seller = memberRepository.save(createUser(1L));
-
-    //TODO : 추후 Spring Security 테스트로 적용
-    JwtService jwtService = mock(JwtService.class);
-    when(jwtService.getEmail()).thenReturn(seller.getEmail());
-    ItemService itemService = new ItemService(itemRepositroy, memberRepository,
-        customItemRepository, jwtService);
+    loginUser(seller);
 
     String name = "박효신 1집";
     BigDecimal price = new BigDecimal("50000");
@@ -219,12 +221,7 @@ class ItemServiceIntegerationTest {
   void delete_item_test() {
     //given
     Member seller = memberRepository.save(createUser(1L));
-
-    //TODO : 추후 Spring Security 테스트로 적용
-    JwtService jwtService = mock(JwtService.class);
-    when(jwtService.getEmail()).thenReturn(seller.getEmail());
-    ItemService itemService = new ItemService(itemRepositroy, memberRepository,
-        customItemRepository, jwtService);
+    loginUser(seller);
 
     String name = "박효신 1집";
     BigDecimal price = new BigDecimal("50000");
