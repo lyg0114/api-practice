@@ -59,6 +59,15 @@ public class ItemService {
     itemRepositroy.save(itemRequest.toEntity(seller));
   }
 
+  public void updateItem(ItemRequest itemRequest, Long itemId) {
+    itemRepositroy.findById(itemId)
+        .orElseThrow(() -> new CustomException(ITEM_NOT_EXIST))
+        .updateItem(itemRequest);
+  }
+
+  public void deleteItem(Long itemId) {
+  }
+
   private void validateDuplicateName(String name) {
     if (hasText(name) && itemRepositroy.existsByName(name)) {
       throw new CustomException(ITEM_NAME_ALREADY_EXIST);
@@ -72,12 +81,4 @@ public class ItemService {
       throw new CustomException(ITEM_TYPE_NOT_EXIST, ex);
     }
   }
-
-  public void updateItem(ItemRequest itemRequest, Long itemId) {
-  }
-
-
-  public void deleteItem(Long itemId) {
-  }
-
 }

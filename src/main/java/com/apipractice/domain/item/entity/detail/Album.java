@@ -2,8 +2,11 @@ package com.apipractice.domain.item.entity.detail;
 
 import static jakarta.persistence.GenerationType.IDENTITY;
 import static lombok.AccessLevel.PROTECTED;
+import static org.springframework.util.StringUtils.hasText;
 
 import com.apipractice.domain.common.BaseTimeEntity;
+import com.apipractice.domain.item.dto.ItemDto;
+import com.apipractice.domain.item.dto.ItemDto.AlbumItemRequest;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
@@ -13,6 +16,7 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import org.springframework.util.StringUtils;
 
 /**
  * @author : iyeong-gyo
@@ -38,4 +42,12 @@ public class Album extends BaseTimeEntity {
   @Column(name = "etc")
   private String etc;
 
+  public void updateAlbum(AlbumItemRequest album) {
+    if (hasText(album.getArtist())) {
+      this.artist = album.getArtist();
+    }
+    if (hasText(album.getEtc())) {
+      this.etc = album.getEtc();
+    }
+  }
 }

@@ -3,6 +3,7 @@ package com.apipractice.domain.item.entity;
 import static com.apipractice.domain.item.dto.ItemType.ALBUM;
 import static com.apipractice.domain.item.dto.ItemType.BOOK;
 import static com.apipractice.domain.item.dto.ItemType.MOVIE;
+import static com.apipractice.global.exception.CustomErrorCode.ITEMTYPE_CANNOT_CHANGE;
 import static jakarta.persistence.CascadeType.ALL;
 import static jakarta.persistence.FetchType.LAZY;
 import static jakarta.persistence.GenerationType.IDENTITY;
@@ -12,6 +13,7 @@ import com.apipractice.domain.common.BaseTimeEntity;
 import com.apipractice.domain.item.dto.ItemDto.AlbumItemResponse;
 import com.apipractice.domain.item.dto.ItemDto.AlbumItemResponse.AlbumItemResponseBuilder;
 import com.apipractice.domain.item.dto.ItemDto.BookItemResponse;
+import com.apipractice.domain.item.dto.ItemDto.ItemRequest;
 import com.apipractice.domain.item.dto.ItemDto.ItemResponse;
 import com.apipractice.domain.item.dto.ItemDto.ItemResponse.ItemResponseBuilder;
 import com.apipractice.domain.item.dto.ItemDto.MovieItemResponse;
@@ -20,6 +22,7 @@ import com.apipractice.domain.item.entity.detail.Album;
 import com.apipractice.domain.item.entity.detail.Book;
 import com.apipractice.domain.item.entity.detail.Movie;
 import com.apipractice.domain.member.entity.Member;
+import com.apipractice.global.exception.CustomException;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
@@ -84,6 +87,31 @@ public class Item extends BaseTimeEntity {
   @OneToOne(fetch = LAZY, cascade = ALL) // 영속선 전이 ALL 설정
   @JoinColumn(name = "book_id")
   private Book book;
+
+  public void updateItem(ItemRequest itemRequest) {
+    if (!itemRequest.getItemType().equals(this.itemType)) {
+      throw new CustomException(ITEMTYPE_CANNOT_CHANGE);
+    }
+
+    this.name = itemRequest.getName();
+    this.price = itemRequest.getPrice();
+    this.stockQuantity = itemRequest.getStockQuantity();
+
+    if (itemType.equals(ALBUM.getKey())) {
+      Album album = this.getAlbum();
+      album.updateAlbum(itemRequest.getAlbum());
+    }
+
+    if (itemType.equals(BOOK.getKey())) {
+      Book book = this.getBook();
+      book.updateBook(itemRequest.getBook());
+    }
+
+    if (itemType.equals(MOVIE.getKey())) {
+      Movie movie = this.getMovie();
+      movie.updateMovie(itemRequest.getMovie());
+    }
+  }
 
   public ItemResponse toDto() {
 

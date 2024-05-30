@@ -2,8 +2,11 @@ package com.apipractice.domain.item.entity.detail;
 
 import static jakarta.persistence.GenerationType.IDENTITY;
 import static lombok.AccessLevel.PROTECTED;
+import static org.springframework.util.StringUtils.hasText;
 
 import com.apipractice.domain.common.BaseTimeEntity;
+import com.apipractice.domain.item.dto.ItemDto;
+import com.apipractice.domain.item.dto.ItemDto.BookItemRequest;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
@@ -13,6 +16,7 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import org.springframework.util.StringUtils;
 
 /**
  * @author : iyeong-gyo
@@ -37,4 +41,13 @@ public class Book extends BaseTimeEntity {
 
   @Column(name = "isbn")
   private String isbn;
+
+  public void updateBook(BookItemRequest book) {
+    if (hasText(book.getAuthor())) {
+      this.author = book.getAuthor();
+    }
+    if (hasText(book.getIsbn())) {
+      this.isbn = book.getIsbn();
+    }
+  }
 }
