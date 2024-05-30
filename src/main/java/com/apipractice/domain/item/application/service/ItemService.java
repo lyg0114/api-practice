@@ -11,6 +11,7 @@ import com.apipractice.domain.item.application.repository.ItemRepositroy;
 import com.apipractice.domain.item.dto.ItemDto.ItemCondition;
 import com.apipractice.domain.item.dto.ItemDto.ItemRequest;
 import com.apipractice.domain.item.dto.ItemDto.ItemResponse;
+import com.apipractice.domain.item.entity.Item;
 import com.apipractice.domain.member.application.repository.MemberRepository;
 import com.apipractice.domain.member.entity.Member;
 import com.apipractice.global.exception.CustomException;
@@ -67,6 +68,10 @@ public class ItemService {
   }
 
   public void deleteItem(Long itemId) {
+    Item item = itemRepositroy.findById(itemId)
+        .orElseThrow(() -> new CustomException(ITEM_NOT_EXIST));
+
+    itemRepositroy.delete(item);
   }
 
   private void validateDuplicateName(String name) {

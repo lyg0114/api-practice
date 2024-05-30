@@ -2,6 +2,7 @@ package com.apipractice.integration.item.application.service;
 
 import static com.apipractice.domain.item.dto.ItemType.ALBUM;
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
@@ -17,7 +18,9 @@ import com.apipractice.domain.item.entity.detail.Album;
 import com.apipractice.domain.member.application.repository.MemberRepository;
 import com.apipractice.domain.member.entity.Member;
 import com.apipractice.global.security.service.JwtService;
+import jakarta.persistence.EntityManager;
 import java.math.BigDecimal;
+import java.util.NoSuchElementException;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -35,25 +38,25 @@ import org.springframework.transaction.annotation.Transactional;
 @SpringBootTest
 class ItemServiceIntegerationTest {
 
-  @Autowired private ItemService itemService;
   @Autowired private ItemRepositroy itemRepositroy;
   @Autowired private MemberRepository memberRepository;
   @Autowired private CustomItemRepository customItemRepository;
+  @Autowired private EntityManager em;
 
   private Member createUser(Long id) {
     return Member.builder()
-        .name("name -" + id)
-        .nickname("nickname -" + id)
+        .name("name-" + id)
+        .nickname("nickname-" + id)
         .email("email" + id + "@gmail.com")
-        .password("test1234! - " + id)
+        .password("test1234!-" + id)
         .build();
   }
 
   private Item createAlbum(Long id, Member seller) {
     Item album = createItem(id, seller, ALBUM);
     album.updateAlbum(Album.builder()
-        .artist("artist - " + id)
-        .etc("etc - " + id)
+        .artist("artist-" + id)
+        .etc("etc-" + id)
         .build());
     return album;
   }
@@ -62,7 +65,7 @@ class ItemServiceIntegerationTest {
     Item.ItemBuilder builder = Item.builder();
     builder.seller(seller);
     builder.itemType(itemType.getKey());
-    builder.name("item - " + id);
+    builder.name("item-" + id);
     builder.price(new BigDecimal(10000));
     builder.stockQuantity(10);
     return builder.build();
@@ -76,6 +79,10 @@ class ItemServiceIntegerationTest {
     Item album = itemRepositroy.save(createAlbum(1L, seller));
 
     //when
+    JwtService jwtService = mock(JwtService.class);
+    when(jwtService.getEmail()).thenReturn(seller.getEmail());
+    ItemService itemService = new ItemService(itemRepositroy, memberRepository,
+        customItemRepository, jwtService);
     ItemResponse response = itemService.findItem(seller.getId());
 
     //then
@@ -101,7 +108,8 @@ class ItemServiceIntegerationTest {
     //TODO : 추후 Spring Security 테스트로 적용
     JwtService jwtService = mock(JwtService.class);
     when(jwtService.getEmail()).thenReturn(seller.getEmail());
-    itemService = new ItemService(itemRepositroy, memberRepository, customItemRepository, jwtService);
+    ItemService itemService = new ItemService(itemRepositroy, memberRepository,
+        customItemRepository, jwtService);
 
     String name = "박효신 1집";
     BigDecimal price = new BigDecimal("50000");
@@ -147,7 +155,8 @@ class ItemServiceIntegerationTest {
     //TODO : 추후 Spring Security 테스트로 적용
     JwtService jwtService = mock(JwtService.class);
     when(jwtService.getEmail()).thenReturn(seller.getEmail());
-    itemService = new ItemService(itemRepositroy, memberRepository, customItemRepository, jwtService);
+    ItemService itemService = new ItemService(itemRepositroy, memberRepository,
+        customItemRepository, jwtService);
 
     String name = "박효신 1집";
     BigDecimal price = new BigDecimal("50000");
@@ -203,5 +212,53 @@ class ItemServiceIntegerationTest {
     assertThat(response.getAlbum()).isNotNull();
     assertThat(response.getAlbum().getArtist()).isEqualTo(updateArtist);
     assertThat(response.getAlbum().getEtc()).isEqualTo(updateEtc);
+  }
+
+  @DisplayName("물품 단건 삭제에 성공한다.")
+  @Test
+  void delete_item_test() {
+    //given
+    Member seller = memberRepository.save(createUser(1L));
+
+    //TODO : 추후 Spring Security 테스트로 적용
+    JwtService jwtService = mock(JwtService.class);
+    when(jwtService.getEmail()).thenReturn(seller.getEmail());
+    ItemService itemService = new ItemService(itemRepositroy, memberRepository,
+        customItemRepository, jwtService);
+
+    String name = "박효신 1집";
+    BigDecimal price = new BigDecimal("50000");
+    int stockQuantity = 10;
+    String itemType = ALBUM.getKey();
+    String artist = "박효신";
+    String etc = "박효신 1집 한정 앨범";
+
+    Item item = Item.builder()
+        .seller(seller)
+        .name(name)
+        .price(price)
+        .stockQuantity(stockQuantity)
+        .itemType(itemType)
+        .album(Album.builder()
+            .artist(artist)
+            .etc(etc)
+            .build())
+        .build();
+
+    Item saveItem = itemRepositroy.save(item);
+    Long itemId = saveItem.getId();
+
+    itemRepositroy.flush();
+    //when
+    itemService.deleteItem(itemId);
+
+    // 실제 쿼리 확인
+    em.flush();
+    em.clear();
+
+    //then
+    assertThrows(NoSuchElementException.class, () -> {
+      itemRepositroy.findById(itemId).orElseThrow();
+    });
   }
 }
