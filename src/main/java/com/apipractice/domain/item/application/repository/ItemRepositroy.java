@@ -10,4 +10,6 @@ import org.springframework.data.jpa.repository.JpaRepository;
  */
 public interface ItemRepositroy extends JpaRepository<Item, Long> {
 
+  boolean existsByName(String name);
+
 }

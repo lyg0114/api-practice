@@ -3,12 +3,15 @@ package com.apipractice.domain.item.dto;
 import static com.apipractice.domain.item.dto.ItemType.ALBUM;
 import static com.apipractice.domain.item.dto.ItemType.BOOK;
 import static com.apipractice.domain.item.dto.ItemType.MOVIE;
+import static com.apipractice.global.exception.CustomErrorCode.ITEM_TYPE_NOT_EXIST;
 import static lombok.AccessLevel.PRIVATE;
 
 import com.apipractice.domain.item.entity.Item;
 import com.apipractice.domain.item.entity.detail.Album;
 import com.apipractice.domain.item.entity.detail.Book;
 import com.apipractice.domain.item.entity.detail.Movie;
+import com.apipractice.domain.member.entity.Member;
+import com.apipractice.global.exception.CustomException;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.DecimalMin;
 import jakarta.validation.constraints.Min;
@@ -77,11 +80,14 @@ public class ItemDto {
     @Valid private BookItemRequest book;
     @Valid private MovieItemRequest movie;
 
-    public Item toEntity() {
+    public Item toEntity(Member seller) {
       Item.ItemBuilder builder = Item.builder()
           .name(this.name)
           .price(this.price)
-          .stockQuantity(this.stockQuantity);
+          .stockQuantity(this.stockQuantity)
+          .itemType(this.itemType)
+          .seller(seller)
+          ;
 
       if (itemType.equals(ALBUM.getKey())) {
         return builder
@@ -110,7 +116,7 @@ public class ItemDto {
             .build();
       }
 
-      throw new DataIntegrityViolationException("wrong itemType received");
+      throw new CustomException(ITEM_TYPE_NOT_EXIST);
     }
   }
 

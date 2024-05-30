@@ -69,7 +69,7 @@ public class Item extends BaseTimeEntity {
   @Column(name = "item_type")
   private String itemType;
 
-  @ManyToOne
+  @ManyToOne(fetch = LAZY)
   @JoinColumn(name = "member_id")
   private Member seller;
 

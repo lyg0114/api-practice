@@ -1,5 +1,6 @@
 package com.apipractice.domain.item.dto;
 
+import com.apipractice.global.security.type.RoleType;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 
@@ -18,4 +19,13 @@ public enum ItemType {
 
   private final String key;
   private final String title;
+
+  public static ItemType fromKey(String key) {
+    for (ItemType item : ItemType.values()) {
+      if (item.getKey().equals(key)) {
+        return item;
+      }
+    }
+    throw new IllegalArgumentException("No enum constant with key " + key);
+  }
 }
