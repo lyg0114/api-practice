@@ -1,8 +1,9 @@
 package com.apipractice.global.security.filter;
 
-import static com.apipractice.global.exception.CustomErrorCode.INVALID_HTTP_METHOD;
+import static com.apipractice.global.exception.CustomErrorCode.TOKEN_NOT_EXIST;
 import static com.apipractice.global.security.filter.CustomAuthenticationFilter.LOGIN_PATH;
-import static org.springframework.http.HttpMethod.GET;
+import static com.apipractice.global.security.service.JwtService.TOKEN_HEADER_PREFIX;
+import static org.springframework.http.HttpHeaders.AUTHORIZATION;
 import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 
 import com.apipractice.global.exception.CustomErrorCode;
@@ -13,22 +14,32 @@ import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import java.io.IOException;
-import org.springframework.http.HttpMethod;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.filter.OncePerRequestFilter;
 
 /**
  * @author : iyeong-gyo
  * @package : com.apipractice.global.security.filter
  * @since : 22.05.24
- *
- * - 로그인 요청의 메서드 타입을 체크하는 필터
+ * <p>
+ *  - JWT 토큰 존재 여부 검증 필터
  */
-public class LoginMethodTypeCheckFilter extends OncePerRequestFilter {
+@Slf4j
+public class JwtTokenExistCheckFilter extends OncePerRequestFilter {
 
   private final ObjectMapper objectMapper;
 
-  public LoginMethodTypeCheckFilter(ObjectMapper objectMapper) {
+  public JwtTokenExistCheckFilter(ObjectMapper objectMapper) {
     this.objectMapper = objectMapper;
+  }
+
+  @Override
+  protected boolean shouldNotFilter(HttpServletRequest request) {
+    return isNoNeedAuthenticationURL(request);
+  }
+
+  private boolean isNoNeedAuthenticationURL(HttpServletRequest request) {
+    return request.getServletPath().equals(LOGIN_PATH);
   }
 
   @Override
@@ -36,18 +47,24 @@ public class LoginMethodTypeCheckFilter extends OncePerRequestFilter {
       HttpServletRequest request, HttpServletResponse response, FilterChain filterChain
   ) throws ServletException, IOException {
 
-    if (request.getMethod().equals(GET.name()) && request.getServletPath().equals(LOGIN_PATH)) {
+    if (!hasToken(request)) {
+      log.error("url: {} | errorCode: {} | errorMessage: {} ",
+          request.getRequestURL(), TOKEN_NOT_EXIST, TOKEN_NOT_EXIST.getErrorMessage());
 
-      CustomErrorCode errorCode = INVALID_HTTP_METHOD;
+      CustomErrorCode errorCode = TOKEN_NOT_EXIST;
       response.setStatus(errorCode.getHttpStatus().value());
       response.setContentType(APPLICATION_JSON_VALUE);
       response.setCharacterEncoding("utf-8");
       ErrorResponse errorResponse = new ErrorResponse(errorCode);
       objectMapper.writeValue(response.getWriter(), errorResponse);
-
       return;
     }
 
     filterChain.doFilter(request, response);
+  }
+
+  private boolean hasToken(HttpServletRequest request) {
+    String authorizationHeader = request.getHeader(AUTHORIZATION);
+    return authorizationHeader != null && authorizationHeader.startsWith(TOKEN_HEADER_PREFIX);
   }
 }

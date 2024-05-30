@@ -41,47 +41,62 @@ public class CustomAuthorizationFilter extends OncePerRequestFilter {
   private final JwtService jwtService;
   private final ObjectMapper objectMapper;
 
+  /**
+   * @param request current HTTP request
+   * @return
+   *  - 인증이 필요없는 URL 설정
+   */
+  @Override
+  protected boolean shouldNotFilter(HttpServletRequest request) {
+    return isNoNeedAuthenticationURL(request);
+  }
+
+  private boolean isNoNeedAuthenticationURL(HttpServletRequest request) {
+    return request.getServletPath().equals(LOGIN_PATH);
+  }
+
+  /**
+   *
+   * @param request
+   * @param response
+   * @param filterChain
+   * @throws ServletException
+   * @throws IOException
+   *
+   *  - JWT 토큰 유효성 검증 필터
+   */
   @Override
   protected void doFilterInternal(
       HttpServletRequest request, HttpServletResponse response, FilterChain filterChain
   ) throws ServletException, IOException {
 
-    if (isNoNeedAuthenticationURL(request)) {
-      filterChain.doFilter(request, response);
-    }
-
     String authorizationHeader = request.getHeader(AUTHORIZATION);
     CustomErrorCode errorCode = null;
 
-    // Header에 토큰이 존재하지 않을 시
-    if (!hasToken(authorizationHeader)) {
-      errorCode = CustomErrorCode.TOKEN_NOT_EXIST;
-    } else {
+    try {
+      String accessToken = authorizationHeader.substring(TOKEN_HEADER_PREFIX.length());
+      DecodedJWT decodedJWT = jwtService.verifyToken(accessToken);
 
-      try {
-        String accessToken = authorizationHeader.substring(TOKEN_HEADER_PREFIX.length());
-        DecodedJWT decodedJWT = jwtService.verifyToken(accessToken);
+      String email = decodedJWT.getSubject();
+      String roleListStr = decodedJWT.getClaim(CLAIM_ROLE).asString();
 
-        String email = decodedJWT.getSubject();
-        String roles = decodedJWT.getClaim(CLAIM_ROLE).asString();
+      // SecurityContextHolder에 accessToken 포함하여 저장
+      Authentication authentication = new UsernamePasswordAuthenticationToken(email, accessToken, getAuthorities(roleListStr));
+      SecurityContextHolder.getContext().setAuthentication(authentication);
 
-        // SecurityContextHolder에 accessToken 포함하여 저장
-        Authentication authentication = new UsernamePasswordAuthenticationToken(email, accessToken, getAuthorities(roles));
-        SecurityContextHolder.getContext().setAuthentication(authentication);
+      filterChain.doFilter(request, response);
 
-        filterChain.doFilter(request, response);
-
-      } catch (TokenExpiredException e) {
-        // Access Token 만료
-        errorCode = CustomErrorCode.ACCESS_TOKEN_EXPIRED;
-      } catch (Exception e) {
-        // 유효하지 않은 Access Token
-        errorCode = CustomErrorCode.INVALID_TOKEN;
-      }
-
+    } catch (TokenExpiredException e) {
+      // Access Token 만료
+      errorCode = CustomErrorCode.ACCESS_TOKEN_EXPIRED;
+    } catch (Exception e) {
+      // 유효하지 않은 Access Token
+      errorCode = CustomErrorCode.INVALID_TOKEN;
     }
 
     if (errorCode != null) {
+      log.error("url: {} | errorCode: {} | errorMessage: {} ",
+          request.getRequestURL(), errorCode, errorCode.getErrorMessage());
       response.setStatus(errorCode.getHttpStatus().value());
       response.setContentType(APPLICATION_JSON_VALUE);
       response.setCharacterEncoding("utf-8");
@@ -90,20 +105,12 @@ public class CustomAuthorizationFilter extends OncePerRequestFilter {
     }
   }
 
-  private List<SimpleGrantedAuthority> getAuthorities(String roleStr) {
-    String[] roles = roleStr.split(",");
+  private List<SimpleGrantedAuthority> getAuthorities(String roleListStr) {
+    String[] roles = roleListStr.split(",");
     List<SimpleGrantedAuthority> authorities = new ArrayList<>();
     for (String role : roles) {
       authorities.add(new SimpleGrantedAuthority(role));
     }
     return authorities;
-  }
-
-  private boolean hasToken(String authorizationHeader) {
-    return authorizationHeader != null && authorizationHeader.startsWith(TOKEN_HEADER_PREFIX);
-  }
-
-  private boolean isNoNeedAuthenticationURL(HttpServletRequest request) {
-    return request.getServletPath().equals(LOGIN_PATH);
   }
 }

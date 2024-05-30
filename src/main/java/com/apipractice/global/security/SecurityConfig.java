@@ -4,7 +4,7 @@ import static org.springframework.security.config.http.SessionCreationPolicy.STA
 
 import com.apipractice.global.security.filter.CustomAuthenticationFilter;
 import com.apipractice.global.security.filter.CustomAuthorizationFilter;
-import com.apipractice.global.security.filter.LoginMethodTypeCheckFilter;
+import com.apipractice.global.security.filter.JwtTokenExistCheckFilter;
 import com.apipractice.global.security.service.JwtService;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
@@ -19,7 +19,6 @@ import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
 import org.springframework.security.config.annotation.web.configurers.AuthorizeHttpRequestsConfigurer;
-import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.access.AccessDeniedHandler;
 import org.springframework.security.web.authentication.AuthenticationFailureHandler;
@@ -52,8 +51,8 @@ public class SecurityConfig {
    * @param http
    * @return
    * @throws Exception
-   *  - 필터 호출 순서
-   *     - 1. LoginMethodTypeCheckFilter.class
+   *  - 필터 호출 순서 (필터가 등록되는 순서 체크)
+   *     - 1. JwtTokenExistCheckFilter.class
    *     - 2. CustomAuthorizationFilter.calss
    *     -----------------------------------------
    *     - 3. CustomAuthenticationFilter.class // 로그인 때만 호출
@@ -99,14 +98,14 @@ public class SecurityConfig {
    */
   private CustomAuthenticationFilter getAuthenticationFilter() {
     return new CustomAuthenticationFilter(
-        authManagerBuilder, authenticationSuccessHandler, authenticationFailureHandler);
+        authManagerBuilder, authenticationSuccessHandler, authenticationFailureHandler, objectMapper);
   }
 
   /**
    * @return CustomAuthenticationFilter
    *  - 로그인 method, url 체크 필터
    */
-  private LoginMethodTypeCheckFilter getLoginMethodTypeCheckFilter() {
-    return new LoginMethodTypeCheckFilter(objectMapper);
+  private JwtTokenExistCheckFilter getLoginMethodTypeCheckFilter() {
+    return new JwtTokenExistCheckFilter(objectMapper);
   }
 }

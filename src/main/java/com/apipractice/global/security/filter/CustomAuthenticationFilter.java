@@ -1,14 +1,16 @@
 package com.apipractice.global.security.filter;
 
+import static com.apipractice.global.exception.CustomErrorCode.INVALID_HTTP_METHOD;
 import static com.apipractice.global.exception.CustomErrorCode.INVALID_VALUE;
+import static org.springframework.http.HttpMethod.GET;
 
 import com.apipractice.domain.member.dto.MemberDto.LoginRequest;
-import com.apipractice.global.aop.annotation.Trace;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.util.stream.Collectors;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.AuthenticationServiceException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -26,23 +28,25 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
  *
  *  - id, pw 를 이용한 사용자 체크 필터
  */
+@Slf4j
 public class CustomAuthenticationFilter extends UsernamePasswordAuthenticationFilter {
 
-  public static final String LOGIN_PATH = "/api/v1/members/login";
+  public static final String LOGIN_PATH = "/api/members/v1/login";
   private final AuthenticationManager authenticationManager;
-  private ObjectMapper objectMapper;
+  private final ObjectMapper objectMapper;
 
   public CustomAuthenticationFilter(
       AuthenticationManagerBuilder authManagerBuilder,
       AuthenticationSuccessHandler successHandler,
-      AuthenticationFailureHandler failureHandler
+      AuthenticationFailureHandler failureHandler,
+      ObjectMapper objectMapper
   ) {
     this.setPostOnly(true);
     this.setFilterProcessesUrl(LOGIN_PATH);
     this.authenticationManager = authManagerBuilder.getOrBuild();
     this.setAuthenticationSuccessHandler(successHandler);
     this.setAuthenticationFailureHandler(failureHandler);
-    this.objectMapper = new ObjectMapper();
+    this.objectMapper = objectMapper;
   }
 
   /**
@@ -55,9 +59,20 @@ public class CustomAuthenticationFilter extends UsernamePasswordAuthenticationFi
   @Override
   public Authentication attemptAuthentication(HttpServletRequest request, HttpServletResponse response)
       throws AuthenticationException {
+
+    if (isGetMethod(request)) {
+      log.error("url: {} | errorCode: {} | errorMessage: {} ",
+          request.getRequestURL(), INVALID_HTTP_METHOD, INVALID_HTTP_METHOD.getErrorMessage());
+      throw new AuthenticationServiceException("can't use get method");
+    }
+
     LoginRequest loginRequest = createLoginRequest(request);
     Authentication authentication = new UsernamePasswordAuthenticationToken(loginRequest.getEmail(), loginRequest.getPassword());
     return authenticationManager.authenticate(authentication);
+  }
+
+  private boolean isGetMethod(HttpServletRequest request) {
+    return request.getMethod().equals(GET.name());
   }
 
   /**
