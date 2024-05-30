@@ -4,7 +4,6 @@ import static com.apipractice.domain.item.dto.ItemType.ALBUM;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
-import com.apipractice.domain.item.application.repository.CustomItemRepository;
 import com.apipractice.domain.item.application.repository.ItemRepositroy;
 import com.apipractice.domain.item.application.service.ItemService;
 import com.apipractice.domain.item.dto.ItemDto.AlbumItemRequest;
@@ -41,12 +40,11 @@ import org.springframework.transaction.annotation.Transactional;
 @ActiveProfiles("test")
 @Transactional // 모든 테스트가 각각의 트랜잭션에서 실행되도록
 @SpringBootTest
-class ItemServiceIntegerationTest {
+class ItemCRUDServiceIntegerationTest {
 
   @Autowired private JwtService jwtService;
   @Autowired private ItemRepositroy itemRepositroy;
   @Autowired private MemberRepository memberRepository;
-  @Autowired private CustomItemRepository customItemRepository;
   @Autowired private ItemService itemService;
   @Autowired private EntityManager em;
 
