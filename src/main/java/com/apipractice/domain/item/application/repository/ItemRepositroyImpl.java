@@ -4,6 +4,7 @@ import static com.apipractice.domain.item.entity.QItem.item;
 import static com.apipractice.domain.item.entity.detail.QAlbum.album;
 import static com.apipractice.domain.item.entity.detail.QBook.book;
 import static com.apipractice.domain.item.entity.detail.QMovie.movie;
+import static com.apipractice.domain.member.entity.QMember.member;
 import static org.springframework.util.StringUtils.hasText;
 
 import com.apipractice.domain.item.dto.ItemDto.ItemCondition;
@@ -41,12 +42,14 @@ public class ItemRepositroyImpl implements ItemRepositroyCustom {
     return queryFactory
         .select(item)
         .from(item)
-        .join(item.album, album).fetchJoin()
-        .join(item.movie, movie).fetchJoin()
-        .join(item.book, book).fetchJoin()
+        .leftJoin(item.album, album).fetchJoin()
+        .leftJoin(item.movie, movie).fetchJoin()
+        .leftJoin(item.book, book).fetchJoin()
+        .leftJoin(item.seller, member).fetchJoin()
         .where(
             itemNameEq(condition.getName()),
-            priceBetween(condition.getLoePrice(), condition.getGoePrice())
+            priceBetween(condition.getLoePrice(), condition.getGoePrice()),
+            albumArtistEq(condition.getArtist())
         )
         .offset(pageable.getOffset())   // 어디서부터
         .limit(pageable.getPageSize())  // 한페이지에 몇개
@@ -57,14 +60,20 @@ public class ItemRepositroyImpl implements ItemRepositroyCustom {
     return queryFactory
         .select(item.count())
         .from(item)
-        .join(item.album, album).fetchJoin()
-        .join(item.movie, movie).fetchJoin()
-        .join(item.book, book).fetchJoin()
+        .leftJoin(item.album, album).fetchJoin()
+        .leftJoin(item.movie, movie).fetchJoin()
+        .leftJoin(item.book, book).fetchJoin()
+        .leftJoin(item.seller, member).fetchJoin()
         .where(
             itemNameEq(condition.getName()),
-            priceBetween(condition.getLoePrice(), condition.getGoePrice())
+            priceBetween(condition.getLoePrice(), condition.getGoePrice()),
+            albumArtistEq(condition.getArtist())
         )
         .fetchOne();
+  }
+
+  private BooleanExpression albumArtistEq(String artist) {
+    return hasText(artist) ? item.album.artist.eq(artist) : null;
   }
 
   private BooleanExpression itemNameEq(String itemName) {
@@ -72,7 +81,11 @@ public class ItemRepositroyImpl implements ItemRepositroyCustom {
   }
 
   private BooleanExpression priceBetween(BigDecimal priceLoe, BigDecimal priceGoe) {
-    return priceLoe(priceLoe).and(priceGoe(priceGoe));
+    if (priceLoe == null || priceGoe == null) {
+      return null;
+    }
+
+    return priceGoe(priceGoe).and(priceLoe(priceLoe));
   }
 
   private BooleanExpression priceLoe(BigDecimal priceLoe) {
