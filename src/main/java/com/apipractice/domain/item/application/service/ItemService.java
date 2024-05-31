@@ -42,9 +42,8 @@ public class ItemService {
 
   @Transactional(readOnly = true)
   public Page<ItemResponse> searchItems(ItemCondition condition, Pageable pageable) {
-    Page<Item> items = customItemRepository.searchItemsPage(condition, pageable);
-
-    return null;
+    return customItemRepository.searchItemsPage(condition, pageable)
+        .map(ItemResponse::fromEntity);
   }
 
   @Transactional(readOnly = true)

@@ -38,7 +38,7 @@ public class CustomItemRepository {
         );
   }
 
-  private List<Item> searchItems(ItemCondition condition, Pageable pageable) {
+  public List<Item> searchItems(ItemCondition condition, Pageable pageable) {
     return queryFactory
         .select(item)
         .from(item)

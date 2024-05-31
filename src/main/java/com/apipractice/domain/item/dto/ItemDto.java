@@ -22,15 +22,14 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.ToString;
-import org.springframework.dao.DataIntegrityViolationException;
 
 /**
  * @author : iyeong-gyo
  * @package : com.apipractice.domain.item.dto
  * @since : 25.05.24
- *
- *  - 새로운 유형의 Item을 추가하려면 inner 클래스 선언후 ItemRequest 의 필드에 추가한다.
- *  - inner 클래스의 유효성을 검사하려면 @Valid 어노테이션을 붙여야 한다.
+ * <p>
+ * - 새로운 유형의 Item을 추가하려면 inner 클래스 선언후 ItemRequest 의 필드에 추가한다. - inner 클래스의 유효성을 검사하려면 @Valid 어노테이션을
+ * 붙여야 한다.
  */
 public class ItemDto {
 
@@ -77,9 +76,12 @@ public class ItemDto {
     @NotBlank(message = "물품 종류를 선택해 주세요.")
     private String itemType;
 
-    @Valid private AlbumItemRequest album;
-    @Valid private BookItemRequest book;
-    @Valid private MovieItemRequest movie;
+    @Valid
+    private AlbumItemRequest album;
+    @Valid
+    private BookItemRequest book;
+    @Valid
+    private MovieItemRequest movie;
 
     public Item toEntity(Member seller) {
       Item.ItemBuilder builder = Item.builder()
@@ -87,8 +89,7 @@ public class ItemDto {
           .price(this.price)
           .stockQuantity(this.stockQuantity)
           .itemType(this.itemType)
-          .seller(seller)
-          ;
+          .seller(seller);
 
       if (itemType.equals(ALBUM.getKey())) {
         return builder
@@ -152,7 +153,6 @@ public class ItemDto {
     private String actor;
   }
 
-
   @ToString
   @Getter
   @Builder
@@ -168,6 +168,40 @@ public class ItemDto {
     private AlbumItemResponse album;
     private BookItemResponse book;
     private MovieItemResponse movie;
+
+    public static ItemResponse fromEntity(Item item) {
+
+      ItemResponse.ItemResponseBuilder builder = ItemResponse.builder();
+      builder.name(item.getName());
+      builder.price(item.getPrice());
+      builder.stockQuantity(item.getStockQuantity());
+      builder.itemType(item.getItemType());
+      builder.sellerName(item.getSeller().getName());
+      builder.sellerEamil(item.getSeller().getEmail());
+
+      if (item.getItemType().equals(ALBUM.getKey())) {
+        builder.album(AlbumItemResponse.builder()
+            .artist(item.getAlbum().getArtist())
+            .etc(item.getAlbum().getEtc())
+            .build());
+      }
+
+      if (item.getItemType().equals(BOOK.getKey())) {
+        builder.book(BookItemResponse.builder()
+            .isbn(item.getBook().getIsbn())
+            .author(item.getBook().getAuthor())
+            .build());
+      }
+
+      if (item.getItemType().equals(MOVIE.getKey())) {
+        builder.movie(MovieItemResponse.builder()
+            .actor(item.getMovie().getActor())
+            .director(item.getMovie().getDirector())
+            .build());
+      }
+
+      return builder.build();
+    }
   }
 
   @ToString
