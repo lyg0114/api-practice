@@ -16,7 +16,6 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.support.PageableExecutionUtils;
-import org.springframework.stereotype.Repository;
 
 /**
  * @author : iyeong-gyo
@@ -24,11 +23,11 @@ import org.springframework.stereotype.Repository;
  * @since : 25.05.24
  */
 @RequiredArgsConstructor
-@Repository
-public class CustomItemRepository {
+public class ItemRepositroyImpl implements ItemRepositroyCustom {
 
   private final JPAQueryFactory queryFactory;
 
+  @Override
   public Page<Item> searchItemsPage(ItemCondition condition, Pageable pageable) {
     return PageableExecutionUtils
         .getPage(

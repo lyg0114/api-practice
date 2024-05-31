@@ -6,7 +6,6 @@ import static com.apipractice.global.exception.CustomErrorCode.ITEM_NOT_EXIST;
 import static com.apipractice.global.exception.CustomErrorCode.ITEM_TYPE_NOT_EXIST;
 import static org.springframework.util.StringUtils.hasText;
 
-import com.apipractice.domain.item.application.repository.CustomItemRepository;
 import com.apipractice.domain.item.application.repository.ItemRepositroy;
 import com.apipractice.domain.item.dto.ItemDto.ItemCondition;
 import com.apipractice.domain.item.dto.ItemDto.ItemRequest;
@@ -16,7 +15,6 @@ import com.apipractice.domain.member.application.repository.MemberRepository;
 import com.apipractice.domain.member.entity.Member;
 import com.apipractice.global.exception.CustomException;
 import com.apipractice.global.security.service.JwtService;
-import java.util.List;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
@@ -37,12 +35,11 @@ public class ItemService {
 
   private final ItemRepositroy itemRepositroy;
   private final MemberRepository memberRepository;
-  private final CustomItemRepository customItemRepository;
   private final JwtService jwtService;
 
   @Transactional(readOnly = true)
   public Page<ItemResponse> searchItems(ItemCondition condition, Pageable pageable) {
-    return customItemRepository.searchItemsPage(condition, pageable)
+    return itemRepositroy.searchItemsPage(condition, pageable)
         .map(ItemResponse::fromEntity);
   }
 
