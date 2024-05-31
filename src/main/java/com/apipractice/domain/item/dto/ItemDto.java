@@ -41,7 +41,8 @@ public class ItemDto {
   public static class ItemCondition {
 
     private String name;
-    private BigDecimal price;
+    private BigDecimal loePrice;
+    private BigDecimal goePrice;
     private Integer stockQuantity;
 
     // Album
@@ -155,7 +156,7 @@ public class ItemDto {
   @ToString
   @Getter
   @Builder
-  @AllArgsConstructor(access = PRIVATE)
+  @AllArgsConstructor
   public static class ItemResponse {
 
     private String name;

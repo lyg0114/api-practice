@@ -16,9 +16,11 @@ import com.apipractice.domain.member.application.repository.MemberRepository;
 import com.apipractice.domain.member.entity.Member;
 import com.apipractice.global.exception.CustomException;
 import com.apipractice.global.security.service.JwtService;
+import java.util.List;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -39,8 +41,9 @@ public class ItemService {
   private final JwtService jwtService;
 
   @Transactional(readOnly = true)
-  public Page<ItemResponse> searchItems(ItemCondition condition) {
-    Page<ItemResponse> responses= customItemRepository.searchItems(condition);
+  public Page<ItemResponse> searchItems(ItemCondition condition, Pageable pageable) {
+    Page<Item> items = customItemRepository.searchItemsPage(condition, pageable);
+
     return null;
   }
 
