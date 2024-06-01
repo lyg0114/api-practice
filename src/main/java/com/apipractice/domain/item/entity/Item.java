@@ -163,4 +163,11 @@ public class Item extends BaseTimeEntity {
     this.album = album;
   }
 
+  public void updateMovie(Movie movie) {
+    this.movie = movie;
+  }
+
+  public void updateBook(Book book) {
+    this.book = book;
+  }
 }

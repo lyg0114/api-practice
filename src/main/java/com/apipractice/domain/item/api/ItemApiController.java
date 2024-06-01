@@ -3,11 +3,11 @@ package com.apipractice.domain.item.api;
 import com.apipractice.domain.item.application.service.ItemService;
 import com.apipractice.domain.item.dto.ItemDto;
 import com.apipractice.domain.item.dto.ItemDto.ItemResponse;
-import jakarta.persistence.PrePersist;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -34,11 +34,11 @@ public class ItemApiController {
   private final ItemService itemService;
 
   @GetMapping
-  public ResponseEntity<Page<ItemResponse>> searchItems(ItemDto.ItemCondition condition) {
+  public ResponseEntity<Page<ItemResponse>> searchItems(ItemDto.ItemCondition condition, Pageable pageable) {
 
     return ResponseEntity
         .status(HttpStatus.OK)
-        .body(itemService.searchItems(condition));
+        .body(itemService.searchItems(condition, pageable));
   }
 
   @GetMapping("/{itemId}")
