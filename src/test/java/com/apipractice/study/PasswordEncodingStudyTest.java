@@ -1,4 +1,4 @@
-package com.study;
+package com.apipractice.study;
 
 import static org.assertj.core.api.Assertions.assertThat;
 

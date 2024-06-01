@@ -1,4 +1,4 @@
-package com.study;
+package com.apipractice.study;
 
 import static com.apipractice.global.security.type.RoleType.fromKey;
 
