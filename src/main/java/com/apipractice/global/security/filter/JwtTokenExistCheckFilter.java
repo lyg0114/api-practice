@@ -1,7 +1,7 @@
 package com.apipractice.global.security.filter;
 
 import static com.apipractice.global.exception.CustomErrorCode.TOKEN_NOT_EXIST;
-import static com.apipractice.global.security.filter.CustomAuthenticationFilter.LOGIN_PATH;
+import static com.apipractice.global.security.filter.NoNeedAuthentication.isNoNeedAuthenticationURL;
 import static com.apipractice.global.security.service.JwtService.TOKEN_HEADER_PREFIX;
 import static org.springframework.http.HttpHeaders.AUTHORIZATION;
 import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
@@ -36,10 +36,6 @@ public class JwtTokenExistCheckFilter extends OncePerRequestFilter {
   @Override
   protected boolean shouldNotFilter(HttpServletRequest request) {
     return isNoNeedAuthenticationURL(request);
-  }
-
-  private boolean isNoNeedAuthenticationURL(HttpServletRequest request) {
-    return request.getServletPath().equals(LOGIN_PATH);
   }
 
   @Override

@@ -81,7 +81,7 @@ public class SecurityConfig {
 //        .requestMatchers(antMatcher(GET,"/api/v1/members/user/**")).hasRole(USER.name())
 //        .requestMatchers(antMatcher(GET,"/api/v1/members/admin/**")).hasRole(ADMIN.name())
         .anyRequest()
-        .authenticated();
+        .permitAll(); // 비회원도 접근할 수 있도록 처리
   }
 
   /**
