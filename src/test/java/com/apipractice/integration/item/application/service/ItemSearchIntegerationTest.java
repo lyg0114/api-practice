@@ -120,7 +120,7 @@ class ItemSearchIntegerationTest {
     return builder.build();
   }
 
-  @DisplayName("상품 조회에 성공한다.")
+  @DisplayName("전체 상품 조회에 성공한다.")
   @Test
   void find_items() {
     //given
@@ -128,17 +128,16 @@ class ItemSearchIntegerationTest {
     em.clear();
 
     ItemCondition condition = ItemCondition.builder().build();
-    PageRequest pageRequest = PageRequest.of(0, 10);
+    PageRequest pageRequest = PageRequest.of(0, 20);
 
     //when
     Page<Item> items = itemRepositroy.searchItemsPage(condition, pageRequest);
 
-
     //then
-//    List<ItemResponse> content = responses.getContent();
-//    for (ItemResponse response : content) {
-//      System.out.println("response = " + response);
-//    }
+    assertThat(items).isNotNull();
+    List<Item> result = items.getContent();
+    assertThat(result).isNotNull();
+    assertThat(result.size()).isEqualTo(12);
   }
 
   @DisplayName("상품명으로 조회에 성공한다.")
