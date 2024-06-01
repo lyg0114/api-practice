@@ -56,14 +56,20 @@ public class ItemRepositroyImpl implements ItemRepositroyCustom {
         .fetch();
   }
 
+  /**
+   * @param condition
+   * @return
+   * fetch join을 사용하면 결과 집합의 크기와 상관없이 연관된 모든 데이터를 가져오게 되므로, 이는 카운트 쿼리와는 부적합.
+   * 따라서 fetch join이 아닌 단순 join을 사용해야 함
+   */
   public Long itemsTotal(ItemCondition condition) {
     return queryFactory
         .select(item.count())
         .from(item)
-        .leftJoin(item.album, album).fetchJoin()
-        .leftJoin(item.movie, movie).fetchJoin()
-        .leftJoin(item.book, book).fetchJoin()
-        .leftJoin(item.seller, member).fetchJoin()
+        .leftJoin(item.album, album)
+        .leftJoin(item.movie, movie)
+        .leftJoin(item.book, book)
+        .leftJoin(item.seller, member)
         .where(
             itemNameEq(condition.getName()),
             priceBetween(condition.getLoePrice(), condition.getGoePrice()),
