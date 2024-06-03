@@ -1,14 +1,20 @@
 package com.apipractice.unit.item.controller;
 
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 import com.apipractice.domain.item.application.service.ItemService;
+import com.apipractice.domain.item.dto.ItemDto;
+import com.apipractice.domain.item.dto.ItemDto.AlbumItemRequest;
+import com.apipractice.domain.item.dto.ItemDto.ItemRequest;
 import com.apipractice.domain.item.dto.ItemDto.ItemResponse;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
@@ -20,6 +26,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.web.servlet.MockMvc;
 
@@ -35,6 +42,7 @@ public class ItemControllerUnitTest {
 
   @MockBean public ItemService itemService;
   @Autowired private MockMvc mockMvc;
+  @Autowired private ObjectMapper objectMapper;
 
   void createItemResponse(Long id, List<ItemResponse> result) {
     result.add(ItemResponse.builder()
@@ -52,7 +60,7 @@ public class ItemControllerUnitTest {
     return result;
   }
 
-  @DisplayName("상품조회 api 테스트")
+  @DisplayName("상품조회에 성공한다.")
   @Test
   void find_items() throws Exception {
     //given
@@ -76,5 +84,33 @@ public class ItemControllerUnitTest {
         .andExpect(jsonPath("$.number").value(0))
         .andExpect(jsonPath("$.first").value(true))
         .andExpect(jsonPath("$.last").value(true));
+  }
+
+  @DisplayName("상품등록에 성공한다.")
+  @WithMockUser(roles = {"ADMIN", "SELLER"})
+  @Test
+  void add_items() throws Exception {
+    //given
+    ItemDto.ItemRequest itemRequest = ItemRequest.builder()
+        .name("item-name")
+        .price(new BigDecimal(1000))
+        .stockQuantity(10)
+        .itemType("album")
+        .album(AlbumItemRequest.builder()
+            .artist("artist")
+            .etc("album-etc")
+            .build())
+        .build();
+    doNothing().when(itemService).addItem(any());
+
+    //when, then
+    mockMvc
+        .perform(
+            post("/api/items/v1")
+                .contentType("application/json")
+                .content(objectMapper.writeValueAsString(itemRequest))
+        )
+        .andDo(print())
+        .andExpect(status().isOk());
   }
 }
